@@ -65,8 +65,13 @@ h1 {
 }
 
 /* Edit attendances */
-.btn-users-show{
+.btn-users-show {
   margin-top: -10px;
   margin-bottom: 10px;
 }
 
+/* User request */
+ul {
+  list-style-type: none; 
+  padding-left: 0;
+}
