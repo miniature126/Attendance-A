@@ -12,7 +12,7 @@
           <th>指示者確認印</th>
         </tr>
         <tr>
-          <td></td>
+          <td><%= l(@attendance.worked_on, format: :short) %></td>
           <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
           <td></td>
           <td></td>

@@ -44,6 +44,8 @@ class AttendancesController < ApplicationController
   end
   
   def edit_overwork
+    @user = User.find(params[:user_id])
+    @attendance = Attendance.find(params[:id])
   end
 
   def update_overwork

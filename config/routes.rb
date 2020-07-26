@@ -17,12 +17,10 @@ Rails.application.routes.draw do
       patch 'attendances/update_one_month'
     end
     resources :attendances, only: :update
-      member do
-        get 'attendances/edit_overwork'
-        patch 'attendances/update_overwork'
-      end
+    get 'attendances/:id/edit_overwork', to: 'attendances#edit_overwork', as: :edit_overwork
+    patch 'attendances/:id/update_overwork', to: 'attendances#update_overwork', as: :update_overwork
+
   end
   
-
-    
+  
 end
