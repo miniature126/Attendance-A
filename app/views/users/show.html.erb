@@ -26,7 +26,9 @@
     <ul>
         <li><%= link_to "【所属長承認申請のお知らせ】", "#" %></li>
         <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
-        <li><%= link_to "【残業申請のお知らせ】", "#" %></li>
+        <% if current_user.admin? %>
+            <li><%= link_to "【残業申請のお知らせ】", "#" %></li>
+        <% end %>
     </ul>
 </div>
 <div class="btn-users-show">
@@ -73,7 +75,7 @@
         <tbody>
             <% @attendances.each do |day| %>
                 <tr>
-                    <td><%= link_to "残業申請", "#", class: "btn btn-primary" %></td>
+                    <td><%= link_to "残業申請", attendances_edit_overwork_user_path(@user), remote: true, class: "btn btn-primary" %></td>
                     <td><%= l(day.worked_on, format: :short) %></td>
                     <!--日曜日は赤-->
                     <% if day.worked_on.wday == 0 %>
@@ -140,3 +142,6 @@
         </tfoot>
     </table>
 </div>
+
+<!--モーダルウインドウ表示-->
+<div id="edit-overwork" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
