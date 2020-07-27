@@ -27,7 +27,7 @@
         <li><%= link_to "【所属長承認申請のお知らせ】", "#" %></li>
         <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
         <% if current_user.superior? %>
-            <li><%= link_to "【残業申請のお知らせ】", "#" %></li>
+            <li><%= link_to "【残業申請のお知らせ】", user_show_overwork_notice_path(@user, @attendances) %></li>
         <% end %>
     </ul>
 </div>
@@ -145,3 +145,4 @@
 
 <!--モーダルウインドウ表示-->
 <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

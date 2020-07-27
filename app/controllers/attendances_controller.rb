@@ -51,6 +51,9 @@ class AttendancesController < ApplicationController
   def update_overwork_request
   end
   
+  def show_overwork_notice
+  end
+  
   private
     #１ヶ月分の勤怠情報を扱う
     def attendances_params
