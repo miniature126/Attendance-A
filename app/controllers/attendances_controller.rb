@@ -52,6 +52,7 @@ class AttendancesController < ApplicationController
   end
   
   def show_overwork_notice
+    
   end
   
   private

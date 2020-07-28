@@ -9,16 +9,17 @@
           <th>終了予定時間</th>
           <th>翌日</th>
           <th>業務処理内容</th>
-          <th>指示者確認印</th>
+          <th>指示者確認㊞</th>
         </tr>
-        <tr>
-          <td><%= l(@attendance.worked_on, format: :short) %></td>
-          <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
+        <%= form_with(url: show_overwork_notice_user_path(@user), local: true, method: :get) do |f| %>
+          <tr>
+            <td><%= f.text_field %></td>
+            <td><%= f.check_box :next_day, {}, "true", "false" %></td>
+            <td><%= f.text_field :work_content %></td>
+            <td><%= f.text_field :instructor_confirmation %></td>
+          </tr>
+          <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
+        <% end %>
       </table>
     </div>
   </div>
