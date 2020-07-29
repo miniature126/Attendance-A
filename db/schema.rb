@@ -20,12 +20,12 @@ ActiveRecord::Schema.define(version: 20200729113251) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "today_work"
-    t.datetime "overwork_time"
-    t.datetime "finish_overtime"
-    t.boolean "next_day"
-    t.string "work_content"
-    t.string "instructor_confirmation"
+    t.boolean "today_work" #
+    t.datetime "overwork_time" #残業開始時間
+    t.datetime "finish_overtime" #残業終了時間
+    t.boolean "next_day" #翌日勤務
+    t.string "work_content" #作業内容
+    t.string "instructor_confirmation" #上長承認
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 

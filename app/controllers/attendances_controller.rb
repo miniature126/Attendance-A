@@ -60,4 +60,8 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
+    #残業情報を扱う
+    def overwork_params
+      params.require(:user).permit(attendances: [])
+    end
 end
