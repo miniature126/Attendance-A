@@ -73,9 +73,11 @@
         </thead>
         
         <tbody>
-            <% @attendances.each do |day| %>
+            <!--@attendancesをattendanceとして1つずつ１ヶ月分順番に表示-->
+            <% @attendances.each do |day| %> 
                 <tr>
-                    <td><%= link_to "残業申請", user_edit_overwork_request_path(@user, day), remote: true, class: "btn btn-primary" %></td>
+                    <!--パスの引数でattendanceのidを渡す-->
+                    <td><%= link_to "残業申請", attendances_edit_overwork_request_user_path(day), remote: true, class: "btn btn-primary" %></td>
                     <td><%= l(day.worked_on, format: :short) %></td>
                     <!--日曜日は赤-->
                     <% if day.worked_on.wday == 0 %>

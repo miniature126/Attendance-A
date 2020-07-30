@@ -44,8 +44,9 @@ class AttendancesController < ApplicationController
   end
   
   def edit_overwork_request
-    @user = User.find(params[:user_id])
-    @attendance = Attendance.find(params[:id])
+    # URLのidにはattendanceのidが入っている
+    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
+    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を探してくる
   end
 
   def update_overwork_request
