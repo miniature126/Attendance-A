@@ -50,6 +50,14 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
+    @attendance = Attendance.find(params[:id])
+    @user = User.find(@attendance.user_id)
+    if @attendance.update_attributes(overwork_params)
+      flash[:success] = "残業を申請しました。"
+    else
+      flash[:danger] = "無効なデータ入力があった為、申請をキャンセルしました。"
+    end
+    redirect_to user_url(@user)
   end
   
   def show_overwork_notice
@@ -63,6 +71,7 @@ class AttendancesController < ApplicationController
     end
     #残業情報を扱う
     def overwork_params
-      params.require(:user).permit(attendances: [])
+      params.require(:attendance).permit(:finish_overtime, :next_day, :work_content, :instuctor_confirmation)
+      #params.require(:user).permit(attendances: [:finish_overtime, :next_day, :work_content, :instuctor_confirmation])[:attendances]
     end
 end

@@ -20,7 +20,7 @@
               <tr>
                 <td><%= l(@attendance.worked_on, format: :short) %></td>
                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-                <td><%= attendance.time_select :finish_overtime %></td>
+                <td><%= attendance.time_select :finish_overwork %></td>
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= attendance.text_field :work_content, class: "form-control" %></td>
                 <td><%= attendance.text_field :instructor_confirmation, class: "form-control" %></td>
