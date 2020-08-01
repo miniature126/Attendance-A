@@ -13,6 +13,10 @@ class Attendance < ApplicationRecord
   #当日の勤怠データが存在する時、出勤時間のみの更新は無効
   validate :started_at_is_invalid_without_a_finished_at
   
+  validate :finish_overwork, presence: true
+  validate :next_day, allow_nil: true
+  validate :work_content, presence: true
+  validate :instructor_confirmation, presence: true
   
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?

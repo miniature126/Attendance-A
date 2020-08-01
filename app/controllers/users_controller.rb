@@ -59,7 +59,7 @@ class UsersController < ApplicationController
     else
       flash[:danger] = "#{@user.name}の基本情報更新に失敗しました。<br>" + @user.errors.full_messages.join("<br>")
     end
-      redirect_to users_url
+    redirect_to users_url
   end
   
   def edit_basic_info_all

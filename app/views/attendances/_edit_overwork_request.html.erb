@@ -28,7 +28,7 @@
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= attendance.text_field :work_content, class: "form-control" %></td>
                 <td>
-                  <%= attendance.select :instructor_confirmation, { "上長A": 2, "上長B": 1 }, 
+                  <%= attendance.select :instructor_confirmation, { "上長A": 1, "上長B": 2 }, 
                       { include_blank: true }, class: "form-control", required: true %>
                 </td>
               </tr>

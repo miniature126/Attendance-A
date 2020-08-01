@@ -71,6 +71,6 @@ class AttendancesController < ApplicationController
     end
     #残業情報を扱う
     def overwork_params
-      params.require(:attendance).permit(:finish_overtime, :next_day, :work_content, :instuctor_confirmation)
+      params.require(:attendance).permit(:finish_overwork, :next_day, :work_content, :instuctor_confirmation)
     end
 end
