@@ -1,6 +1,7 @@
 <div class="modal-dialog modal-lg modal-dialog-center">
   <div class="modal-content">
     <div class="modal-body">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
       <h4>【残業申請】</h4>
       <%= form_with(model: @attendance, url: attendances_update_overwork_request_user_path(@attendance), local: true, method: :patch) do |f| %>
         <table class="table table-bordered table-striped overwork-application__table">
