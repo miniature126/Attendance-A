@@ -75,3 +75,10 @@ ul {
   list-style-type: none; 
   padding-left: 0;
 }
+
+/* Overwork request */
+.overwork-application__table > thead > tr > th,
+.overwork-application__table > tbody > tr > td {
+  vertical-align: middle;
+  text-align: center;
+}
