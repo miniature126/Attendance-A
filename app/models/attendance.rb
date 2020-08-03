@@ -15,7 +15,7 @@ class Attendance < ApplicationRecord
   
   validates :finish_overwork, presence: true
   validates :next_day, inclusion: { in: [true, false] }
-  validates :work_content, presence: true
+  validates :work_contents, presence: true
   validates :instructor_confirmation, presence: true
   
   def finished_at_is_invalid_without_a_started_at
