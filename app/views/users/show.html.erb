@@ -73,7 +73,6 @@
         </thead>
         
         <tbody>
-            <!--@attendancesをattendanceとして1つずつ１ヶ月分順番に表示-->
             <% @attendances.each do |day| %> 
                 <tr>
                     <!--パスの引数でattendanceのidを渡す-->
@@ -119,8 +118,8 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td><%= day.work_content %></td>
-                    <td><%= day.instructor_confirmation %></td>
+                    <td></td>
+                    <td></td>
                 </tr>
             <% end %>
         </tbody>

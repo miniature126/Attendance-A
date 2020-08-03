@@ -3,7 +3,7 @@
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <h4>【残業申請】</h4>
-      <%= form_with(model: @attendance, url: attendances_update_overwork_request_user_path(@attendance), local: true, method: :patch) do |f| %>
+      <%= form_with(model: @user, url: attendances_update_overwork_request_user_path(@attendance), local: true, method: :patch) do |f| %>
         <table class="table table-bordered table-striped overwork-application__table">
           <thead>
             <tr>
@@ -17,7 +17,7 @@
           </thead>
           
           <tbody>
-            <%= f.fields_for :attenances do |attendance| %>
+            <%= f.fields_for :attendances do |attendance| %>
               <tr>
                 <td><%= l(@attendance.worked_on, format: :short) %></td>
                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
