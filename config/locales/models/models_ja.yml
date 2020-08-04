@@ -20,3 +20,6 @@ ja:
           finished_at: 退勤時間
           note: 備考
           user: ユーザーID
+          finish_overwork: 終了予定時間
+          work_contents: 業務処理内容
+          instructor_confirmation: 指示者確認㊞

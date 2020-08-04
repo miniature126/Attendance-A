@@ -22,7 +22,8 @@
                 <td><%= l(@attendance.worked_on, format: :short) %></td>
                 <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
                 <td>
-                    <%= attendance.time_select :finish_overwork, { include_blank: true },
+                    <%= attendance.time_select :finish_overwork, 
+                        default: { year: @attendance.worked_on.year, month: @attendance.worked_on.month, day: @attendance.worked_on.day }, 
                         class: "input-sm" %>
                 </td>
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>

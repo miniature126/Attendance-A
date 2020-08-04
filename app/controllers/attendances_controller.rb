@@ -57,6 +57,7 @@ class AttendancesController < ApplicationController
     else
       flash[:danger] = "申請をキャンセルしました。"
     end
+
     redirect_to user_url(@user)
   end
   
