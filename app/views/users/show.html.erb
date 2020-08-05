@@ -115,8 +115,8 @@
                         <% end %>
                     </td>
                     <td><%= day.note %></td>
-                    <td><%= day.finish_overwork %></td>
-                    <td></td>
+                    <td><%= l(day.finish_overwork, format: :hour) if day.finish_overwork.present? %></td>
+                    <td><%= l(day.finish_overwork.floor_to(15.minute), format: :minute) if day.finish_overwork.present? %></td>
                     <td></td>
                     <td><%= day.work_contents %></td>
                     <td></td>
