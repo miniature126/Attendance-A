@@ -14,4 +14,9 @@ module AttendancesHelper
   def working_times(start, finish)
     format("%.2f", (((finish.floor_to(15.minute) - start.floor_to(15.minute)) / 60) / 60.0))
   end
+  
+  #出勤時間と終了予定時間を受け取り、時間外時間を計算して返す
+  def overwork_times(finish, overwork)
+    format("%.2f", (((overwork.floor_to(15.minute) - finish.floor_to(15.minute)) / 60) / 60.0))
+  end
 end
