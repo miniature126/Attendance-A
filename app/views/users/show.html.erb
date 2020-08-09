@@ -119,11 +119,17 @@
                     <td><%= l(day.finish_overwork.floor_to(15.minute), format: :minute) if day.finish_overwork.present? %></td>
                     <td>
                         <% if day.finished_at.present? && day.finish_overwork.present? %>
-                                <%= overwork_times(day.finished_at, day.finish_overwork) %>
+                                <%= overwork_times(day.started_at, day.finished_at, day.worked_on, @user.basic_time, day.next_day) %>
                         <% end %>
                     </td>
                     <td><%= day.work_contents %></td>
-                    <td></td>
+                    <% if day.instructor_confirmation == "1" %>
+                        <td>上長Aへ残業申請中</td>
+                    <% elsif day.instructor_confirmation == "2" %>
+                        <td>上長Bへ残業申請中</td>
+                    <% else %>
+                        <td></td>
+                    <% end %>
                 </tr>
             <% end %>
         </tbody>
