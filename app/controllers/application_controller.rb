@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
     #ユーザーに紐付く１ヶ月分のレコードを検索し取得
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
 
-    #対象の月の日数とユーザーに紐付く１ヶ月分のレコードの日数が一致するか評価
+    #対象の月の日数とユーザーに紐付く１ヶ月分のレコードの日数が一致するか否か
     unless one_month.count == @attendances.count
       ActiveRecord::Base.transaction do #トランザクションを開始
         #繰り返し処理により１ヶ月分の勤怠データを生成
