@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20200810014634) do
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "finish_overwork"
+    t.datetime "finish_overwork" #終了予定時間
     t.boolean "next_day"
     t.string "work_contents"
     t.string "instructor_confirmation"
@@ -38,8 +38,8 @@ ActiveRecord::Schema.define(version: 20200810014634) do
     t.string "department"
     t.datetime "basic_time", default: "2020-07-26 23:00:00"
     t.boolean "superior", default: false
-    t.datetime "desig_start_worktime"
-    t.datetime "desig_finish_worktime"
+    t.datetime "desig_start_worktime" #指定勤務開始時間
+    t.datetime "desig_finish_worktime" #指定勤務終了時間
     t.integer "employee_number"
     t.integer "card_id"
     t.index ["email"], name: "index_users_on_email", unique: true
