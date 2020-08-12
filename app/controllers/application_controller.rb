@@ -10,7 +10,12 @@ class ApplicationController < ActionController::Base
   def set_user
     @user = User.find(params[:id])
   end
-    
+  
+  #上長ユーザーのレコードを取得
+  def set_superior
+    @superior = User.where(superior: true)
+  end
+
   #ログイン済みユーザーか確認
   def logged_in_user
     unless logged_in?

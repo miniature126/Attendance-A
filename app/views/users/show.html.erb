@@ -126,13 +126,13 @@
                         <% end %>
                     </td>
                     <td><%= day.work_contents %></td>
-                    <% if day.instructor_confirmation == "1" %>
-                        <td>上長Aへ残業申請中</td>
-                    <% elsif day.instructor_confirmation == "2" %>
-                        <td>上長Bへ残業申請中</td>
-                    <% else %>
-                        <td></td>
-                    <% end %>
+                    <td>
+                        <% @superior.each do |superior| %>
+                            <% if day.instructor_confirmation == superior.name %>
+                                <%= day.instructor_confirmation %>へ残業申請中
+                            <% end %>
+                        <% end %>
+                    </td>
                 </tr>
             <% end %>
         </tbody>

@@ -1,5 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
+  before_action :set_superior, only: [:edit_overwork_request]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -45,8 +46,8 @@ class AttendancesController < ApplicationController
   
   def edit_overwork_request
     # URLのidにはattendanceのidが入っている
-    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを探してくる
-    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を探してくる
+    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを取得
+    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を取得
   end
 
   def update_overwork_request
@@ -57,8 +58,13 @@ class AttendancesController < ApplicationController
     else
       flash[:danger] = "申請をキャンセルしました。"
     end
-
     redirect_to user_url(@user)
+  end
+  
+  def edit_overwork_notice
+  end
+  
+  def update_overwork_notice
   end
   
   private
