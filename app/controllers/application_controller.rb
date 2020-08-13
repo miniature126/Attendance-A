@@ -15,12 +15,6 @@ class ApplicationController < ActionController::Base
   def set_superior
     @superior = User.where(superior: true)
   end
-  
-  #idの値が一致するレコード、レコードのuser_idをもとにユーザー情報を取得
-  def set_attendance_user
-    @attendance = Attendance.find(params[:id])
-    @user = User.find(@attendance.user_id)
-  end
 
   #ログイン済みユーザーか確認
   def logged_in_user

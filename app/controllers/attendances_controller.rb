@@ -4,8 +4,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
-  before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request,
-                                             :edit_overwork_notice, :update_overwork_notice]
+  before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -64,8 +63,15 @@ class AttendancesController < ApplicationController
   
   def update_overwork_notice
   end
-  
+    
   private
+    #beforeフィルター
+    #idの値が一致するレコード、レコードのuser_idをもとにユーザー情報を取得
+    def set_attendance_user
+      @attendance = Attendance.find(params[:id])
+      @user = User.find(@attendance.user_id)
+    end
+    
     #１ヶ月分の勤怠情報を扱う
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
