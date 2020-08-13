@@ -4,6 +4,8 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
+  before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request,
+                                             :edit_overwork_notice, :update_overwork_notice]
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -44,15 +46,11 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
+  # URLのidにはattendanceのidが入っている
   def edit_overwork_request
-    # URLのidにはattendanceのidが入っている
-    @attendance = Attendance.find(params[:id]) #idの値が一致するレコードを取得
-    @user = User.find(@attendance.user_id) #上記レコードのuser_idをもとにユーザー情報を取得
   end
 
   def update_overwork_request
-    @attendance = Attendance.find(params[:id])
-    @user = User.find(@attendance.user_id)
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
