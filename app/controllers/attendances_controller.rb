@@ -59,6 +59,9 @@ class AttendancesController < ApplicationController
   end
   
   def edit_overwork_notice
+    @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？
+    @attendances = Attendance.where(instructor_confirmation: @superior.id)
+    # ↑@attendancesからユーザーの情報を取り出したい！
   end
   
   def update_overwork_notice

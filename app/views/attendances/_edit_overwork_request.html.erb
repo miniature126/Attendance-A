@@ -29,7 +29,7 @@
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= attendance.text_field :work_contents, class: "form-control" %></td>
                 <td>
-                  <%= attendance.collection_select :instructor_confirmation, @superior, :name, :name, 
+                  <%= attendance.collection_select :instructor_confirmation, @superior, :id, :name, 
                       { include_blank: true }, class: "form-control", required: true %>
                 </td>
               </tr>

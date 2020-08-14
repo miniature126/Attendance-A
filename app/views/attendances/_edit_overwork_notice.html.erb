@@ -2,42 +2,40 @@
   <div class="modal-content">
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4>【残業申請】</h4>
-      <%= form_with(model: @user, url: attendances_update_overwork_request_user_path(@attendance), local: true, method: :patch) do |f| %>
-        <table class="table table-bordered table-striped overwork-application__table">
-          <thead>
-            <tr>
-              <th>日付</th>
-              <th>曜日</th>
-              <th>終了予定時間</th>
-              <th>翌日</th>
-              <th>業務処理内容</th>
-              <th>指示者確認㊞</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-            <%= f.fields_for :attendances do |attendance| %>
+      <%# ユーザー表示のeach文 %>
+        <h4>【残業申請】</h4>
+        <%= form_with(model: attendance, url: attendances_update_overwork_notice_user_path(attendance), local: true, method: :patch) do |f| %>
+          <table class="table table-bordered table-striped">
+            <thead>
               <tr>
-                <td><%= l(@attendance.worked_on, format: :short) %></td>
-                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
-                <td>
-                    <%= attendance.time_select :finish_overwork, 
-                        default: { year: @attendance.worked_on.year, month: @attendance.worked_on.month, day: @attendance.worked_on.day }, 
-                        class: "input-sm" %>
-                </td>
-                <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
-                <td><%= attendance.text_field :work_contents, class: "form-control" %></td>
-                <td>
-                  <%= attendance.collection_select :instructor_confirmation, @superior, :name, :name, 
-                      { include_blank: true }, class: "form-control", required: true %>
-                </td>
+                <th>日付</th>
+                <th>曜日</th>
+                <th>終了予定時間</th>
+                <th>時間外時間</th>
+                <th>業務処理内容</th>
+                <th>指示者確認㊞</th>
+                <th>変更</th>
+                <th>勤怠を確認する</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
-        <%= f.submit "変更を送信する", class: "btn btn-primary btn-block" %>
-      <% end %>
+            </thead>
+            
+            <tbody>
+              <%# 残業情報表示のeach文 %>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              <%# end %>
+            </tbody>
+          </table>
+        <% end %>
+      <%# end %>
     </div>
   </div>
 </div>

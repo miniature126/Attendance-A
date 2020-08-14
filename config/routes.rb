@@ -21,8 +21,6 @@ Rails.application.routes.draw do
       patch 'attendances/update_overwork_notice'
     end
     resources :attendances, only: :update
-    #get 'attendances/:id/edit_overwork_request', to: 'attendances#edit_overwork_request', as: :edit_overwork_request
-    #patch 'attendances/:id/update_overwork_request', to: 'attendances#update_overwork_request', as: :update_overwork_request
   end
   
   
