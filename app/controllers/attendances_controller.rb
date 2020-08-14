@@ -50,6 +50,8 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
+    @attendance.apply_id = @user.id #申請する人のid
+    # @attendance.applied_id = @attendance.instructor_confirmation.to_i #申請される人のid
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
@@ -60,8 +62,7 @@ class AttendancesController < ApplicationController
   
   def edit_overwork_notice
     @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？
-    @attendances = Attendance.where(instructor_confirmation: @superior.id)
-    # ↑@attendancesからユーザーの情報を取り出したい！
+    @users = User.all
   end
   
   def update_overwork_notice
@@ -81,6 +82,6 @@ class AttendancesController < ApplicationController
     end
     #残業情報を扱う
     def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :instructor_confirmation])[:attendances]
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :instructor_confirmation, :apply_id, :applied_id])[:attendances]
     end
 end
