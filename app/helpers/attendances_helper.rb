@@ -24,4 +24,14 @@ module AttendancesHelper
       format("%.2f",(((overwork.floor_to(15.minute) - regular_time.floor_to(15.minute)) / 60) / 60.0))
     end
   end
+  
+  #残業申請情報が存在する場合trueを返す、存在しない場合はfalseを返す
+  def overwork_info(user)
+    if user.attendances.where(instructor_confirmation: @superior.id).any? #送信者のidが存在する時
+      true
+    else
+      false
+    end
+  end
+        
 end

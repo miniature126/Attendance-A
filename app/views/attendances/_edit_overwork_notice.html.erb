@@ -3,9 +3,9 @@
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <% @users.each do |user| %>
-        <h4>【<%= user.name %>の残業申請】</h4> <%# form_withのurlがへん %>
-        <% user.attendances.each do |attendance| %>
-          <%= form_with(model: attendance, url: attendances_update_overwork_notice_user_path(attendance), local: true, method: :patch) do |f| %>
+        <% if overwork_info(user) %>
+          <h4>【<%= user.name %>の残業申請】</h4> <%# form_withのurlがへん %>
+          <%= form_with(model: user, url: attendances_update_overwork_notice_user_path(user), local: true, method: :patch) do |f| %>
             <table class="table table-bordered table-striped">
               <thead>
                 <tr>
@@ -21,20 +21,24 @@
               </thead>
               
               <tbody>
-                <% if attendance.instructor_confirmation.to_i == @superior.id %>
-                  <tr>
-                    <td><%= l(attendance.worked_on, format: :short) %></td>
-                    <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
-                    <td>
-                      <%= overwork_times(user.desig_finish_worktime, attendance.finish_overwork,
-                          attendance.next_day, attendance.worked_on) %>
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
+                <% user.attendances.each do |attendance| %>
+                  <%= f.fields_for :attendances do |day| %>
+                    <% if attendance.instructor_confirmation.to_i == @superior.id %>
+                      <tr>
+                        <td><%= l(attendance.worked_on, format: :short) %></td>
+                        <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                        <td>
+                          <%= overwork_times(user.desig_finish_worktime, attendance.finish_overwork,
+                              attendance.next_day, attendance.worked_on) %>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    <% end %>
+                  <% end %>
                 <% end %>
               </tbody>
             </table>
