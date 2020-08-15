@@ -27,12 +27,12 @@
                       <tr>
                         <td><%= l(attendance.worked_on, format: :short) %></td>
                         <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
+                        <td><%= l(attendance.finish_overwork, format: :time) %></td>
                         <td>
                           <%= overwork_times(user.desig_finish_worktime, attendance.finish_overwork,
                               attendance.next_day, attendance.worked_on) %>
                         </td>
-                        <td></td>
-                        <td></td>
+                        <td><%= attendance.work_contents %></td>
                         <td></td>
                         <td></td>
                         <td></td>
