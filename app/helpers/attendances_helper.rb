@@ -27,7 +27,7 @@ module AttendancesHelper
   
   #残業申請情報が存在する場合trueを返す、存在しない場合はfalseを返す
   def overwork_info(user)
-    if user.attendances.where(instructor_confirmation: @superior.id).any? #送信者のidが存在する時
+    if user.attendances.where(applied_id: @superior.id).any? #送信者のidが存在する時
       true
     else
       false

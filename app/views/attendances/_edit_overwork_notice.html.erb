@@ -23,7 +23,7 @@
               <tbody>
                 <% user.attendances.each do |attendance| %>
                   <%= f.fields_for :attendances do |day| %>
-                    <% if attendance.instructor_confirmation.to_i == @superior.id %>
+                    <% if attendance.applied_id == @superior.id %>
                       <tr>
                         <td><%= l(attendance.worked_on, format: :short) %></td>
                         <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
@@ -33,9 +33,9 @@
                               attendance.next_day, attendance.worked_on) %>
                         </td>
                         <td><%= attendance.work_contents %></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><%= day.select :instructor_confirmation, [ ["申請中", 1], ["なし", 2], ["承認", 3], ["否認", 4] ] %></td>
+                        <td><%= day.check_box :reflection, {}, "true", "false" %></td>
+                        <td><%= link_to "確認", "#", class: "btn btn-primary" %></td>
                       </tr>
                     <% end %>
                   <% end %>
