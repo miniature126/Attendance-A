@@ -128,11 +128,15 @@
                     </td>
                     <td><%= day.work_contents %></td>
                     <td>
-                        <% @superior.each do |superior| %>
-                            <%# 今回superior.idは"2"か"3" %>
-                            <% if day.instructor_confirmation.to_i == superior.id %>
-                                <%= superior.name %>へ残業申請中
+                        <% if day.instructor_confirmation.nil? && day.applied_id.present? %>
+                            <% @superior.each do |superior| %>
+                                <%# 今回superior.idは"2"か"3" %>
+                                <% if day.applied_id == superior.id %>
+                                    <%= superior.name %>へ残業申請中
+                                <% end %>
                             <% end %>
+                        <% elsif day.applied_id.nil? && day.instructor_confirmation.present? %>
+                            
                         <% end %>
                     </td>
                 </tr>

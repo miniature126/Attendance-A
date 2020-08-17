@@ -50,8 +50,6 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
-    @attendance.apply_id = @user.id #申請する人のid
-    # @attendance.applied_id = @attendance.instructor_confirmation.to_i #申請される人のid
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
