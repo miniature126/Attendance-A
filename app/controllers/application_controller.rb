@@ -13,7 +13,8 @@ class ApplicationController < ActionController::Base
   
   #上長ユーザーのレコードを取得
   def set_superior
-    @superior = User.where(superior: true)
+    @attendance = Attendance.find(params[:id])
+    @superior = User.where(superior: true).where.not(id: @attendance.user_id)
   end
 
   #ログイン済みユーザーか確認
