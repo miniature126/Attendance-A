@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200817105052) do
+ActiveRecord::Schema.define(version: 20200818105656) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20200817105052) do
     t.datetime "finish_overwork"
     t.boolean "next_day"
     t.string "work_contents"
-    t.string "instructor_confirmation"
+    t.integer "instructor_confirmation", default: 1
     t.integer "apply_id"
     t.integer "applied_id"
     t.boolean "reflection"
