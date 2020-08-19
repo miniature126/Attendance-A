@@ -6,7 +6,7 @@
         <% if overwork_info(user) %>
           <h4>【<%= user.name %>の残業申請】</h4> <%# form_withのurlがへん %>
           <%= form_with(model: user, url: attendances_update_overwork_notice_user_path(user), local: true, method: :patch) do |f| %>
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped overwork-application__table">
               <thead>
                 <tr>
                   <th>日付</th>
@@ -23,6 +23,8 @@
               <tbody>
                 <% user.attendances.each do |attendance| %>
                   <%= f.fields_for :attendances do |day| %>
+                  <%# 申請先のidとお知らせを開いている上長のidが一致する
+                      (=お知らせを開いている上長に残業申請をしている)場合 %>
                     <% if attendance.applied_id == @superior.id %>
                       <tr>
                         <td><%= l(attendance.worked_on, format: :short) %></td>
@@ -33,15 +35,19 @@
                               attendance.next_day, attendance.worked_on) %>
                         </td>
                         <td><%= attendance.work_contents %></td>
-                        <td><%= day.select :instructor_confirmation, [ ["申請中", 1], ["なし", 2], ["承認", 3], ["否認", 4] ] %></td>
+                        <td><%= day.select :instructor_confirmation,
+                                { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
+                                { selected: 2 }, class: "form-control", required: true %>
+                        </td>
                         <td><%= day.check_box :reflection, {}, "true", "false" %></td>
-                        <td><%= link_to "確認", "#", class: "btn btn-primary" %></td>
+                        <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
                       </tr>
                     <% end %>
                   <% end %>
                 <% end %>
               </tbody>
             </table>
+            <% f.submit "変更を送信する" %>
           <% end %>
         <% end %>
       <% end %>

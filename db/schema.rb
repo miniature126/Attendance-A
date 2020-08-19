@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(version: 20200818105656) do
     t.datetime "finish_overwork"
     t.boolean "next_day"
     t.string "work_contents"
-    t.integer "instructor_confirmation", default: 1
+    t.integer "instructor_confirmation", default: 2
     t.integer "apply_id"
     t.integer "applied_id"
     t.boolean "reflection"

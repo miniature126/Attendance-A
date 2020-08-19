@@ -33,5 +33,4 @@ module AttendancesHelper
       false
     end
   end
-        
 end
