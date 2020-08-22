@@ -2,10 +2,10 @@
   <div class="modal-content">
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <% @users.each do |user| %>
-        <% if overwork_info(user) %>
-          <h4>【<%= user.name %>の残業申請】</h4> <%# form_withのurlがへん %>
-          <%= form_with(model: user, url: attendances_update_overwork_notice_user_path(user), local: true, method: :patch) do |f| %>
+      <%= form_with(model: @users, url: users_attendances_update_overwork_notice_path, local: true, method: :patch) do |f| %>
+        <% @users.each do |user| %>
+          <% if overwork_info(user) %>
+            <h4>【<%= user.name %>の残業申請】</h4>
             <table class="table table-bordered table-striped overwork-application__table">
               <thead>
                 <tr>
@@ -21,25 +21,25 @@
               </thead>
               
               <tbody>
-                <% user.attendances.each do |attendance| %>
-                  <%= f.fields_for :attendances do |day| %>
+                <% user.attendances.each do |day| %>
+                  <%= f.fields_for "attendances[]", day do |attendance| %>
                   <%# 申請先のidとお知らせを開いている上長のidが一致する
                       (=お知らせを開いている上長に残業申請をしている)場合 %>
-                    <% if attendance.applied_id == @superior.id %>
+                    <% if day.applied_id == @superior.id %>
                       <tr>
-                        <td><%= l(attendance.worked_on, format: :short) %></td>
-                        <td><%= $days_of_the_week[attendance.worked_on.wday] %></td>
-                        <td><%= l(attendance.finish_overwork, format: :time) %></td>
+                        <td><%= l(day.worked_on, format: :short) %></td>
+                        <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                        <td><%= l(day.finish_overwork, format: :time) %></td>
                         <td>
-                          <%= overwork_times(user.desig_finish_worktime, attendance.finish_overwork,
-                              attendance.next_day, attendance.worked_on) %>
+                          <%= overwork_times(user.desig_finish_worktime, day.finish_overwork,
+                              day.next_day, day.worked_on) %>
                         </td>
-                        <td><%= attendance.work_contents %></td>
-                        <td><%= day.select :instructor_confirmation,
+                        <td><%= day.work_contents %></td>
+                        <td><%= attendance.select :instructor_confirmation,
                                 { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
                                 { selected: 2 }, class: "form-control", required: true %>
                         </td>
-                        <td><%= day.check_box :reflection, {}, "true", "false" %></td>
+                        <td><%= attendance.check_box :reflection, {}, "true", "false" %></td>
                         <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
                       </tr>
                     <% end %>
@@ -47,10 +47,11 @@
                 <% end %>
               </tbody>
             </table>
-            <%= f.submit "変更を送信する", class: "btn btn-primary center-block" %>
           <% end %>
         <% end %>
+        <%= f.submit "変更を送信する", class: "btn btn-primary" %>
       <% end %>
+      <%# link_to "変更を送信する", users_attendances_update_overwork_notice_path, :user_params => @users, method: :patch %>
     </div>
   </div>
 </div>

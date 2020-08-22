@@ -71,7 +71,7 @@ class AttendancesController < ApplicationController
         if attendance.update_attributes(overwork_params)
           flash[:success] = "残業を申請しました。"
         else
-           flash[:danger] = "申請をキャンセルしました。"
+          flash[:danger] = "申請をキャンセルしました。"
         end
       end
     end
