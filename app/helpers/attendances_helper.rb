@@ -33,4 +33,7 @@ module AttendancesHelper
       false
     end
   end
+  
+  #残業申請されている日を変数に格納し返す
+  
 end

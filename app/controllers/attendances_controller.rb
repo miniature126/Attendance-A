@@ -64,6 +64,18 @@ class AttendancesController < ApplicationController
   end
   
   def update_overwork_notice
+    @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？
+    @users = User.all
+    @users.each do |user|
+      user.attendances.each do |attendance|
+        if attendance.update_attributes(overwork_params)
+          flash[:success] = "残業を申請しました。"
+        else
+           flash[:danger] = "申請をキャンセルしました。"
+        end
+      end
+    end
+    redirect_to user_url(@superior)
   end
     
   private
