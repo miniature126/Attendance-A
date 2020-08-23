@@ -64,6 +64,7 @@ class AttendancesController < ApplicationController
   end
   
   def update_overwork_notice
+    @superior = User.find(params[:id])
     overwork_notice_params.each do |id, item|
       @attendance = Attendance.find(id)
       if @attendance.update_attributes(item)
@@ -72,7 +73,7 @@ class AttendancesController < ApplicationController
         flash[:danger] = "申請をキャンセルしました。"
       end
     end
-    redirect_to root_url
+    redirect_to user_url(@superior)
   end
     
   private

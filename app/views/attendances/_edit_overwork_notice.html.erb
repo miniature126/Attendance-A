@@ -2,7 +2,7 @@
   <div class="modal-content">
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <%= form_with(model: @users, url: users_attendances_update_overwork_notice_path, local: true, method: :patch) do |f| %>
+      <%= form_with(model: @users, url: update_overwork_notice_user_path(@superior), local: true, method: :patch) do |f| %>
         <% @users.each do |user| %>
           <% if overwork_info(user) %>
             <h4>【<%= user.name %>の残業申請】</h4>
