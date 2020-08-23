@@ -50,7 +50,7 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
-    if @attendance.update_attributes(overwork_params)
+    if @attendance.update_attributes(overwork_request_params)
       flash[:success] = "残業を申請しました。"
     else
       flash[:danger] = "申請をキャンセルしました。"
@@ -64,18 +64,15 @@ class AttendancesController < ApplicationController
   end
   
   def update_overwork_notice
-    @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？
-    @users = User.all
-    @users.each do |user|
-      user.attendances.each do |attendance|
-        if attendance.update_attributes(overwork_params)
-          flash[:success] = "残業を申請しました。"
-        else
-          flash[:danger] = "申請をキャンセルしました。"
-        end
+    overwork_notice_params.each do |id, item|
+      @attendance = Attendance.find(id)
+      if @attendance.update_attributes(item)
+        flash[:success] = "残業を申請しました。"
+      else
+        flash[:danger] = "申請をキャンセルしました。"
       end
     end
-    redirect_to user_url(@superior)
+    redirect_to root_url
   end
     
   private
@@ -90,8 +87,15 @@ class AttendancesController < ApplicationController
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
-    #残業情報を扱う
-    def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :instructor_confirmation, :apply_id, :applied_id])[:attendances]
+    
+    #残業申請情報を扱う
+    def overwork_request_params
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :apply_id, :applied_id])[:attendances]
     end
+    
+    #残業申請お知らせ情報を扱う
+    def overwork_notice_params
+      params.require(:user).permit(attendances: [:instructor_confirmation, :reflection])[:attendances]
+    end
+    
 end
