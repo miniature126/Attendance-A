@@ -20,7 +20,22 @@
             <%= f.fields_for :attendances do |attendance| %>
               <tr>
                 <td><%= l(@attendance.worked_on, format: :short) %></td>
-                <td><%= $days_of_the_week[@attendance.worked_on.wday] %></td>
+                <!--日曜日は赤-->
+                    <% if @attendance.worked_on.wday == 0 %>
+                        <td>
+                            <font color="red"><%= $days_of_the_week[@attendance.worked_on.wday] %></font>
+                        </td>
+                    <!--土曜日は青-->
+                    <% elsif @attendance.worked_on.wday == 6 %>
+                        <td>
+                            <font color="blue"><%= $days_of_the_week[@attendance.worked_on.wday] %></font>
+                        </td>
+                    <!--月〜金曜日は黒-->
+                    <% else %>
+                        <td>
+                            <%= $days_of_the_week[@attendance.worked_on.wday] %>
+                        </td>
+                    <% end %>
                 <td>
                     <%= attendance.time_select :finish_overwork, 
                         default: { year: @attendance.worked_on.year, month: @attendance.worked_on.month, day: @attendance.worked_on.day }, 

@@ -28,7 +28,22 @@
                     <% if day.applied_id == @superior.id %>
                       <tr>
                         <td><%= l(day.worked_on, format: :short) %></td>
-                        <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+                        <!--日曜日は赤-->
+                        <% if day.worked_on.wday == 0 %>
+                            <td>
+                                <font color="red"><%= $days_of_the_week[day.worked_on.wday] %></font>
+                            </td>
+                        <!--土曜日は青-->
+                        <% elsif day.worked_on.wday == 6 %>
+                            <td>
+                                <font color="blue"><%= $days_of_the_week[day.worked_on.wday] %></font>
+                            </td>
+                        <!--月〜金曜日は黒-->
+                        <% else %>
+                            <td>
+                                <%= $days_of_the_week[day.worked_on.wday] %>
+                            </td>
+                        <% end %>
                         <td><%= l(day.finish_overwork, format: :time) %></td>
                         <td>
                           <%= overwork_times(user.desig_finish_worktime, day.finish_overwork,
