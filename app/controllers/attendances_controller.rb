@@ -65,11 +65,11 @@ class AttendancesController < ApplicationController
   
   def update_overwork_notice
     @superior = User.find(params[:id])
-    overwork_notice_params.each do |id, item| #update_one_monthアクション参考
+    overwork_request_params.each do |id, item| #update_one_monthアクション参考
       @attendance = Attendance.find(id)
       ref = params[:user][:attendances][id][:reflection]
-      #refはstring型なのでboolean型に変換
-      if ActiveRecord::Type::Boolean.new.cast(ref)
+      params[:user][:attendances][id][:applied_id] = nil
+      if ActiveRecord::Type::Boolean.new.cast(ref) #refはstring型なのでboolean型に変換
         if @attendance.update_attributes(item)
           flash[:success] = "情報を更新しました。"
         else
@@ -96,7 +96,7 @@ class AttendancesController < ApplicationController
     
     #残業申請情報を扱う
     def overwork_request_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :apply_id, :applied_id])[:attendances]
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :apply_id, :applied_id, :instructor_confirmation, :reflection])[:attendances]
     end
     
     #残業申請お知らせ情報を扱う

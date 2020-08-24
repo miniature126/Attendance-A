@@ -128,15 +128,20 @@
                     </td>
                     <td><%= day.work_contents %></td>
                     <td>
-                        <% if day.instructor_confirmation.nil? && day.applied_id.present? %>
+                        <% if day.instructor_confirmation.present? && day.applied_id.present? %> <%# 一般または上長ユーザーから申請時 %>
                             <% @superior.each do |superior| %>
-                                <%# 今回superior.idは"2"か"3" %>
-                                <% if day.applied_id == superior.id %>
-                                    <%= superior.name %>へ残業申請中
+                            <%# 今回superior.idは"2"か"3" %>
+                                <% if day.applied_id == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
+                                    <% case day.instructor_confirmation %>
+                                    <% when 1, 2 %>
+                                        <%= superior.name %>へ申請中
+                                    <% when 3 %>
+                                        <%= superior.name %>より残業承認済
+                                    <% when 4 %>
+                                        <%= superior.name %>より残業否認
+                                    <% end %> 
                                 <% end %>
                             <% end %>
-                        <% elsif day.applied_id.nil? && day.instructor_confirmation.present? %>
-                            
                         <% end %>
                     </td>
                 </tr>

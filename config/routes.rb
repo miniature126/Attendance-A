@@ -22,6 +22,4 @@ Rails.application.routes.draw do
     end
     resources :attendances, only: :update
   end
-  # patch 'users/attendances/update_overwork_notice', to: "attendances#update_overwork_notice"
-  
 end
