@@ -68,12 +68,12 @@ class AttendancesController < ApplicationController
     overwork_notice_params.each do |id, item| #update_one_monthアクション参考
       @attendance = Attendance.find(id)
       ref = params[:user][:attendances][id][:reflection]
-      ActiveRecord::Type::Boolean.new.cast(ref) #refはstring型なのでboolean型に変換
-      if ref
+      #refはstring型なのでboolean型に変換
+      if ActiveRecord::Type::Boolean.new.cast(ref)
         if @attendance.update_attributes(item)
-          flash[:success] = "残業を申請しました。"
+          flash[:success] = "情報を更新しました。"
         else
-          flash[:danger] = "申請をキャンセルしました。"
+          flash[:danger] = "更新をキャンセルしました。"
         end
       end
       ref = nil
