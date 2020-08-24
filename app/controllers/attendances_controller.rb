@@ -68,7 +68,9 @@ class AttendancesController < ApplicationController
     overwork_request_params.each do |id, item| #update_one_monthアクション参考
       @attendance = Attendance.find(id)
       ref = params[:user][:attendances][id][:reflection]
-      params[:user][:attendances][id][:applied_id] = nil
+      # applied_idの中身がある＝ユーザーまたは上長側から１度は残業申請がされていることと同義
+      # なので、お知らせモーダルからの更新時にapplied_idの中身を空にする(残業申請している、という状態を取り消す)
+      # params[:user][:attendances][id][:applied_id] = nil
       if ActiveRecord::Type::Boolean.new.cast(ref) #refはstring型なのでboolean型に変換
         if @attendance.update_attributes(item)
           flash[:success] = "情報を更新しました。"
@@ -99,9 +101,9 @@ class AttendancesController < ApplicationController
       params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :apply_id, :applied_id, :instructor_confirmation, :reflection])[:attendances]
     end
     
-    #残業申請お知らせ情報を扱う
-    def overwork_notice_params
-      params.require(:user).permit(attendances: [:instructor_confirmation, :reflection])[:attendances]
-    end
+    #残業申請お知らせ情報を扱う、今はoverwork_request_paramsに含んでいるので使っていない
+    # def overwork_notice_params
+    #   params.require(:user).permit(attendances: [:instructor_confirmation, :reflection])[:attendances]
+    # end
     
 end
