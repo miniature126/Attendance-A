@@ -39,7 +39,7 @@
                 <td>
                     <%= attendance.time_select :finish_overwork, 
                         default: { year: @attendance.worked_on.year, month: @attendance.worked_on.month, day: @attendance.worked_on.day }, 
-                        class: "input-sm" %>
+                        minute_step: 15, class: "input-sm" %>
                 </td>
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
                 <td><%= attendance.text_field :work_contents, class: "form-control" %></td>
