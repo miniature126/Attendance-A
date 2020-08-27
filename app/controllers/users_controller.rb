@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all, :update_basic_info_all]
   before_action :admin_or_correct_user, only: :show
-  before_action :set_one_month, only: :show
+  before_action :set_one_month, only: [:set_superior, :show]
   
   def index
     #全てのユーザー、ページネーション設定、form_withのtext_fieldで受け取ったparams[:search]の中身をself.searchに引数として渡す
@@ -16,6 +16,7 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    @application_sum = Attendance.where(applied_id: params[:id]).count
   end
   
   def new

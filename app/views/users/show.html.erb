@@ -31,7 +31,12 @@
         <li><%= link_to "【所属長承認申請のお知らせ】", "#" %></li> 
         <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
         <% if current_user.superior? %>
-            <li><%= link_to "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "disabled" %></li>
+            <li>
+                <%= link_to_if @application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "disabled" %>
+                <% if @application_sum > 0 %>
+                    <font color="red"><%= @application_sum %>件の通知があります</font>
+                <% end %>
+            </li>
         <% end %>
     </ul>
 </div>
