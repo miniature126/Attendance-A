@@ -36,6 +36,11 @@ class ApplicationController < ActionController::Base
     redirect_to root_url unless current_user.admin?
   end
   
+  #上長ユーザーかどうか判定する
+  def superior_user
+    redirect_to root_url unless current_user.superior?
+  end
+  
   #ページ出力前に１ヶ月分のデータの存在を確認・セットする
   def set_one_month
     @first_day = params[:date].nil? ?
@@ -64,6 +69,15 @@ class ApplicationController < ActionController::Base
       @user = User.find(params[:user_id]) if @user.blank?
       unless current_user?(@user) || current_user.admin?
         flash[:danger] = "権限がありません。"
+        redirect_to root_url
+      end
+    end
+    
+    #@userが現在ログインしているユーザー、もしくは上長ユーザーかどうかを確認
+    def superior_or_correct_user
+      @user = User.find(params[:user_id]) if @user.blank?
+      unless current_user?(@user) || current_user.superior?
+        flash[:danger] = "アクセスできないよん"
         redirect_to root_url
       end
     end

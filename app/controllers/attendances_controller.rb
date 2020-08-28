@@ -2,7 +2,7 @@ class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
   before_action :set_superior, only: [:edit_overwork_request]
   before_action :logged_in_user, only: [:update, :edit_one_month]
-  before_action :admin_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
   
@@ -50,6 +50,7 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
+    params[:user][:attendances][:instructor_confirmation] = 2
     if @attendance.update_attributes(overwork_request_params)
       flash[:success] = "残業を申請しました。"
     else
@@ -70,7 +71,7 @@ class AttendancesController < ApplicationController
       ref = params[:user][:attendances][id][:reflection]
       # applied_idの中身がある＝ユーザーまたは上長側から１度は残業申請がされていることと同義
       # なので、お知らせモーダルからの更新時にapplied_idの中身を空にする(残業申請している、という状態を取り消す)
-      # params[:user][:attendances][id][:applied_id] = nil
+      params[:user][:attendances][id][:applied_id] = nil
       if ActiveRecord::Type::Boolean.new.cast(ref) #refはstring型なのでboolean型に変換
         if @attendance.update_attributes(item)
           flash[:success] = "情報を更新しました。"

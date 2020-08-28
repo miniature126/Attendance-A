@@ -75,3 +75,8 @@ ul {
   list-style-type: none; 
   padding-left: 0;
 }
+
+/* Superior notice */
+ul > li > .link__superior--notice {
+  color: red;
+}

@@ -32,9 +32,9 @@
         <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
         <% if current_user.superior? %>
             <li>
-                <%= link_to_if @application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "disabled" %>
+                <%= link_to_if @application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
                 <% if @application_sum > 0 %>
-                    <font color="red"><%= @application_sum %>件の通知があります</font>
+                    <font color="red"><b><%= @application_sum %>件の通知があります</b></font>
                 <% end %>
             </li>
         <% end %>
@@ -133,18 +133,18 @@
                     </td>
                     <td><%= day.work_contents %></td>
                     <td>
-                        <% if day.instructor_confirmation.present? && day.applied_id.present? %> <%# 一般または上長ユーザーから申請時 %>
-                            <% @superior.each do |superior| %>
-                            <%# 今回superior.idは"2"か"3" %>
-                                <% if day.applied_id == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
-                                    <% case day.instructor_confirmation %>
-                                    <% when 1, 2 %>
-                                        <%= superior.name %>へ申請中
-                                    <% when 3 %>
-                                        <%= superior.name %>より残業承認済
-                                    <% when 4 %>
-                                        <%= superior.name %>より残業否認
-                                    <% end %> 
+                        <% @superior.each do |superior| %>
+                        <%# 今回superior.idは"2"か"3" %>
+                            <% if day.applied_id == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
+                                <%# applied_idがnil→１度上長側から残業情報が更新されている(承認or否認orなし。なしって何だ？) %>
+                                <% if day.instructor_confirmation == 1 && day.applied_id.nil? %>
+                                    <%= superior.name %>へ申請中(なし)
+                                <% elsif day.instructor_confirmation == 2 && day.applied_id.present? %>
+                                    <%= superior.name %>へ申請中
+                                <% elsif day.instructor_confirmation == 3 && day.applied_id.nil? %>
+                                    <%= superior.name %>より残業承認済
+                                <% elsif day.instructor_confirmation == 4 && day.applied_id.nil? %>
+                                    <%= superior.name %>より残業否認
                                 <% end %>
                             <% end %>
                         <% end %>
