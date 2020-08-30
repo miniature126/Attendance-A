@@ -10,12 +10,6 @@ class ApplicationController < ActionController::Base
   def set_user
     @user = User.find(params[:id])
   end
-  
-  #上長ユーザーのレコードを取得
-  def set_superior
-    @attendance = Attendance.find(params[:id])
-    @superior = User.where(superior: true).where.not(id: @attendance.user_id)
-  end
 
   #ログイン済みユーザーか確認
   def logged_in_user
@@ -31,14 +25,14 @@ class ApplicationController < ActionController::Base
     redirect_to(root_url) unless current_user?(@user)
   end
   
-  #システム管理権限所有かどうか判定
-  def admin_user
-    redirect_to root_url unless current_user.admin?
-  end
-  
   #上長ユーザーかどうか判定する
   def superior_user
     redirect_to root_url unless current_user.superior?
+  end
+  
+  #システム管理権限所有かどうか判定
+  def admin_user
+    redirect_to root_url unless current_user.admin?
   end
   
   #ページ出力前に１ヶ月分のデータの存在を確認・セットする
@@ -77,7 +71,7 @@ class ApplicationController < ActionController::Base
     def superior_or_correct_user
       @user = User.find(params[:user_id]) if @user.blank?
       unless current_user?(@user) || current_user.superior?
-        flash[:danger] = "アクセスできないよん"
+        flash[:danger] = "アクセスできません。"
         redirect_to root_url
       end
     end

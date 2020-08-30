@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :set_superior, only: [:edit_overwork_request]
+  before_action :set_superior_attendances, only: :edit_overwork_request
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -51,7 +51,7 @@ class AttendancesController < ApplicationController
 
   def update_overwork_request
     params[:user][:attendances][:instructor_confirmation] = 2
-    if @attendance.update_attributes(overwork_request_params)
+    if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
       flash[:danger] = "申請をキャンセルしました。"
@@ -66,14 +66,16 @@ class AttendancesController < ApplicationController
   
   def update_overwork_notice
     @superior = User.find(params[:id])
-    overwork_request_params.each do |id, item| #update_one_monthアクション参考
+    overwork_params.each do |id, item| #update_one_monthアクション参考
       @attendance = Attendance.find(id)
       ref = params[:user][:attendances][id][:reflection]
-      # applied_idの中身がある＝ユーザーまたは上長側から１度は残業申請がされていることと同義
-      # なので、お知らせモーダルからの更新時にapplied_idの中身を空にする(残業申請している、という状態を取り消す)
-      params[:user][:attendances][id][:applied_id] = nil
       if ActiveRecord::Type::Boolean.new.cast(ref) #refはstring型なのでboolean型に変換
         if @attendance.update_attributes(item)
+          @attendance.applied_id = nil
+          @attendance.save
+          # applied_idの中身がある＝ユーザーまたは上長側から１度は残業申請がされていることと同義
+          # なので、お知らせモーダルからの更新時にapplied_idの中身を空にする(残業申請している、という状態を取り消す)
+          # params[:user][:attendances][id][:applied_id] = nil
           flash[:success] = "情報を更新しました。"
         else
           flash[:danger] = "更新をキャンセルしました。"
@@ -83,7 +85,7 @@ class AttendancesController < ApplicationController
     end
     redirect_to user_url(@superior)
   end
-    
+  
   private
     #beforeフィルター
     #idの値が一致するレコード、レコードのuser_idをもとにユーザー情報を取得
@@ -92,13 +94,19 @@ class AttendancesController < ApplicationController
       @user = User.find(@attendance.user_id)
     end
     
+    #上長ユーザーを取得(ログインしているユーザーが上長だった場合は、そのユーザーは除く)
+    def set_superior_attendances
+      @attendance = Attendance.find(params[:id]) #paramsから取得したユーザー
+      @superior = User.where(superior: true).where.not(id: @attendance.user_id)
+    end
+    
     #１ヶ月分の勤怠情報を扱う
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
     end
     
     #残業申請情報を扱う
-    def overwork_request_params
+    def overwork_params
       params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :apply_id, :applied_id, :instructor_confirmation, :reflection])[:attendances]
     end
     

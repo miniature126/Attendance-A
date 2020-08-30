@@ -1,13 +1,13 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                   :edit_basic_info_all, :update_basic_info_all]
-  before_action :set_superior, only: :show
+  before_action :set_superior_users, only: :show
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                         :edit_basic_info_all, :update_basic_info_all]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all, :update_basic_info_all]
   before_action :superior_or_correct_user, only: :show
-  before_action :set_one_month, only: [:set_superior, :show]
+  before_action :set_one_month, only: :show
   
   def index
     #全てのユーザー、ページネーション設定、form_withのtext_fieldで受け取ったparams[:search]の中身をself.searchに引数として渡す
@@ -81,6 +81,12 @@ class UsersController < ApplicationController
   end
   
   private
+    #beforeフィルター
+    #上長ユーザーを取得(ログインしているユーザーが上長だった場合は、そのユーザーは除く)
+    def set_superior_users
+      @superior = User.where(superior: true).where.not(id: @user.id)
+    end
+    
     def user_params
       params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
     end

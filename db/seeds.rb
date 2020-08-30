@@ -1,19 +1,19 @@
 # coding: utf-8
 
 User.create!(name: "Admin",
-             email: "sample@email.com",
+             email: "admin@email.com",
              password: "password",
              password_confirmation: "password",
              admin: true)
 
 User.create!(name: "Superior1",
-             email: "sample-a@email.com",
+             email: "superior-1@email.com",
              password: "password",
              password_confirmation: "password",
              superior: true)
 
 User.create!(name: "Superior2",
-             email: "sample-b@email.com",
+             email: "superior-2@email.com",
              password: "password",
              password_confirmation: "password",
              superior: true)
