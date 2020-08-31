@@ -25,7 +25,7 @@
                   <%= f.fields_for "attendances[]", day do |attendance| %>
                   <%# 申請先のidとお知らせを開いている上長のidが一致する
                       (=お知らせを開いている上長に残業申請をしている)場合 %>
-                    <% if day.applied_id == @superior.id %>
+                    <% if day.applied_id == @superior.id && day.instructor_confirmation == 2 %>
                       <tr>
                         <td><%= l(day.worked_on, format: :short) %></td>
                         <!--日曜日は赤-->
