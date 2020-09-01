@@ -32,9 +32,9 @@
         <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
         <% if current_user.superior? %>
             <li>
-                <%= link_to_if @application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
-                <% if @application_sum > 0 %>
-                    <font color="red"><b><%= @application_sum %>件の通知があります</b></font>
+                <%= link_to_if @overwork_application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
+                <% if @overwork_application_sum > 0 %>
+                    <font color="red"><b><%= @overwork_application_sum %>件の通知があります</b></font>
                 <% end %>
             </li>
         <% end %>
