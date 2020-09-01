@@ -1,6 +1,6 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :set_superior_attendances, only: :edit_overwork_request
+  before_action :set_superior_attendances, only: [:edit_overwork_request, :edit_one_month]
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -36,6 +36,7 @@ class AttendancesController < ApplicationController
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
         attendance.update_attributes!(item) #入力データ上書き
+        
       end
     end
     flash[:success] = "１ヶ月分の勤怠情報を更新しました。"
@@ -51,7 +52,6 @@ class AttendancesController < ApplicationController
 
   def update_overwork_request
     params[:user][:attendances][:instructor_confirmation] = 2
-    # params[:user][:attendances][:overwork_request] = true
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
