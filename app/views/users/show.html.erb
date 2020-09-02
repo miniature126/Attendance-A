@@ -135,7 +135,7 @@
                     <td>
                         <% @superior.each do |superior| %>
                         <%# 今回superior.idは"2"か"3" %>
-                            <% if day.applied_id == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
+                            <% if day.applied_overwork == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
                                 <% if day.instructor_confirmation == 1 %>
                                     <%= superior.name %>へ申請中(なし)
                                 <% elsif day.instructor_confirmation == 2 %>

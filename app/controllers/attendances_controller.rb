@@ -102,6 +102,6 @@ class AttendancesController < ApplicationController
     
     #残業申請情報を扱う
     def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :overwork_request, :applied_id, :instructor_confirmation, :reflection])[:attendances]
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :overwork_request, :applied_overwork, :applied_attendances_change, :instructor_confirmation, :reflection])[:attendances]
     end
 end
