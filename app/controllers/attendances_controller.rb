@@ -35,8 +35,9 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
+        attendance.instructor_confirmation = 2
+        attendance.save
         attendance.update_attributes!(item) #入力データ上書き
-        
       end
     end
     flash[:success] = "１ヶ月分の勤怠情報を更新しました。"
