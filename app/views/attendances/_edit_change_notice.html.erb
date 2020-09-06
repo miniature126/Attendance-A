@@ -4,7 +4,7 @@
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <%= form_with(model: @users, url: update_change_notice_user_path(@superior), local: true, method: :petch) do |f| %>
         <% @users.each do |user| %>
-          <% if application_info(user) %>
+          <% if change_attendance_application_info(user) %>
             <h4>【<%= user.name %>からの勤怠変更申請】</h4>
             <table class="table table-bordered table-striped change-attendances__table">
               <thead>
@@ -38,8 +38,8 @@
               
               <tbody>
                 <% user.attendances.each do |day| %>
-                  <% f.fields_for "attendances[]", day do |attendance| %>
-                    <% if day.applied_attendances_change == @superior.id && day.instructor_confirmation == 2 %>
+                  <%= f.fields_for "attendances[]", day do |attendance| %> <!--左記のdayはブロック変数の|day|-->
+                    <% if day.applied_attendances_change == @superior.id && day.change_attendances_confirmation == 2 %>
                       <tr>
                         <td><%= l(day.worked_on, format: :short) %></td>
                         <% if day.worked_on.wday == 0 %>
@@ -64,9 +64,13 @@
                         <td></td>
                         <td></td>
                         <td><%= day.note %></td>
-                        <td></td>
-                        <td></td>
-                        <td><%= link_to "確認", users_path(user), class: btn btn-primary %></td>
+                        <td>
+                            <%= attendance.select :change_attendances_confirmation,
+                                { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
+                                { selected: 2 }, class: "form-control", required: true %>
+                        </td>
+                        <td><%= attendance.check_box :reflection, {}, "true", "false" %></td>
+                        <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
                       </tr>
                     <% end %>
                   <% end %>
@@ -75,6 +79,7 @@
             </table>
           <% end %>
         <% end %>
+        <%= f.submit "変更を送信する", class: "btn btn-primary center-block" %>
       <% end %>
           
     </div>

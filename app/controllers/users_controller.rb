@@ -16,8 +16,8 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
-    @overwork_application_sum = Attendance.where(instructor_confirmation: 2).where(applied_overwork: params[:id]).count
-    @attendances_application_sum = Attendance.where(instructor_confirmation: 2).where(applied_attendances_change: params[:id]).count
+    @overwork_application_sum = Attendance.where(overwork_confirmation: 2).where(applied_overwork: params[:id]).count
+    @attendances_application_sum = Attendance.where(change_attendances_confirmation: 2).where(applied_attendances_change: params[:id]).count
   end
   
   def new

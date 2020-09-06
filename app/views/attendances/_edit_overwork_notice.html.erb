@@ -4,7 +4,7 @@
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <%= form_with(model: @users, url: update_overwork_notice_user_path(@superior), local: true, method: :patch) do |f| %>
         <% @users.each do |user| %>
-          <% if application_info(user) %>
+          <% if overwork_application_info(user) %>
             <h4>【<%= user.name %>の残業申請】</h4>
             <table class="table table-bordered table-striped overwork-application__table">
               <thead>
@@ -25,7 +25,7 @@
                   <%= f.fields_for "attendances[]", day do |attendance| %>
                   <%# 申請先のidとお知らせを開いている上長のidが一致する
                       (=お知らせを開いている上長に残業申請をしている)場合 %>
-                    <% if day.applied_overwork == @superior.id && day.instructor_confirmation == 2 %>
+                    <% if day.applied_overwork == @superior.id && day.overwork_confirmation == 2 %>
                       <tr>
                         <td><%= l(day.worked_on, format: :short) %></td>
                         <!--日曜日は赤-->
@@ -50,7 +50,7 @@
                               day.next_day, day.worked_on) %>
                         </td>
                         <td><%= day.work_contents %></td>
-                        <td><%= attendance.select :instructor_confirmation,
+                        <td><%= attendance.select :overwork_confirmation,
                                 { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
                                 { selected: 2 }, class: "form-control", required: true %>
                         </td>

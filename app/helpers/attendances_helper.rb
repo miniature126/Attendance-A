@@ -25,13 +25,21 @@ module AttendancesHelper
     end
   end
   
-  #申請中のレコードが存在する場合trueを返す、存在しない場合はfalseを返す
-  def application_info(user)
-    if user.attendances.where(instructor_confirmation: 2).any?
+  #残業申請中のレコードが存在する場合true、存在しない場合はfalseを返す
+  def overwork_application_info(user)
+    if user.attendances.where(overwork_confirmation: 2).any?
       true
     else
       false
     end
   end
   
+  #勤怠変更申請中のレコードが存在する場合はtrue、存在しない場合はfalseを返す
+  def change_attendance_application_info(user)
+    if user.attendances.where(change_attendances_confirmation: 2).any?
+      true
+    else
+      false
+    end
+  end
 end

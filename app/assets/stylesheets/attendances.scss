@@ -10,7 +10,11 @@ h4 {
   text-align: center;
 }
 
-.modal-body .change-attendances__table > thead > tr > th,
+.modal-body .change-attendances__table > thead > tr > th {
+  text-align: center;
+}
+
 .modal-body .change-attendances__table > tbody > tr > td {
+  vertical-align: middle;
   text-align: center;
 }
