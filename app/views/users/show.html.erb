@@ -29,7 +29,12 @@
     <ul>
         <%# 申請がある時だけリンクにしたい %>
         <li><%= link_to "【所属長承認申請のお知らせ】", "#" %></li> 
-        <li><%= link_to "【勤怠変更申請のお知らせ】", "#" %></li>
+        <li>
+            <%= link_to_if @attendances_application_sum > 0, "【勤怠変更申請のお知らせ】", attendances_edit_change_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
+            <% if @attendances_application_sum > 0 %>
+                <font color="red"><b><%= @attendances_application_sum %>件の通知があります</b></font>
+            <% end %>
+        </li>
         <% if current_user.superior? %>
             <li>
                 <%= link_to_if @overwork_application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
@@ -175,3 +180,4 @@
 <!--モーダルウインドウ表示-->
 <div id="edit-overwork-request" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
 <div id="edit-overwork-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
+<div id="edit-change-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200902111159) do
+ActiveRecord::Schema.define(version: 20200906064231) do
 
   create_table "attendances", force: :cascade do |t|
     t.date "worked_on"
@@ -23,10 +23,11 @@ ActiveRecord::Schema.define(version: 20200902111159) do
     t.datetime "finish_overwork"
     t.boolean "next_day"
     t.string "work_contents"
-    t.integer "instructor_confirmation"
+    t.integer "overwork_confirmation"
     t.integer "applied_overwork"
     t.boolean "reflection"
     t.integer "applied_attendances_change"
+    t.integer "change_attendances_confirmation"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -39,10 +40,10 @@ ActiveRecord::Schema.define(version: 20200902111159) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-08-30 23:00:00"
+    t.datetime "basic_time", default: "2020-09-01 23:00:00"
     t.boolean "superior", default: false
-    t.datetime "desig_start_worktime", default: "2020-08-30 23:00:00"
-    t.datetime "desig_finish_worktime", default: "2020-08-31 08:00:00"
+    t.datetime "desig_start_worktime", default: "2020-09-01 23:00:00"
+    t.datetime "desig_finish_worktime", default: "2020-09-02 08:00:00"
     t.integer "employee_number"
     t.integer "card_id"
     t.index ["email"], name: "index_users_on_email", unique: true

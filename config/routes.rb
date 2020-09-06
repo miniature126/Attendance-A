@@ -15,6 +15,8 @@ Rails.application.routes.draw do
       patch 'update_basic_info_all'
       get 'attendances/edit_one_month'
       patch 'attendances/update_one_month'
+      get 'attendances/edit_change_notice'
+      patch 'update_change_notice', to: "attendances#update_change_notice"
       get 'attendances/edit_overwork_request'
       patch 'attendances/update_overwork_request'
       get 'attendances/edit_overwork_notice'

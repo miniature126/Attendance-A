@@ -31,12 +31,12 @@ class AttendancesController < ApplicationController
   def edit_one_month
   end
   
-  def update_one_month
+  def update_one_month #勤怠変更の申請
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
-        attendance.instructor_confirmation = 2
-        attendance.save
+        # attendance.instructor_confirmation = 2
+        # attendance.save １ヶ月分全てのレコードのinstructor_confirmationに2が入る...
         attendance.update_attributes!(item) #入力データ上書き
       end
     end
@@ -45,6 +45,14 @@ class AttendancesController < ApplicationController
   rescue ActiveRecord::RecordInvalid #トランザクションによるエラー分岐
     flash[:danger] = "無効なデータ入力があった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
+  end
+  
+  def edit_change_notice #勤怠変更の承認
+    @superior = User.find(params[:id])
+    @users = User.all
+  end
+  
+  def update_change_notice
   end
   
   # URLのidにはattendanceのidが入っている
@@ -95,13 +103,13 @@ class AttendancesController < ApplicationController
       @superior = User.where(superior: true).where.not(id: @attendance.user_id)
     end
     
-    #１ヶ月分の勤怠情報を扱う
+    #１ヶ月分の勤怠申請情報を扱う
     def attendances_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :instructor_confirmation])[:attendances]
     end
     
     #残業申請情報を扱う
     def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :overwork_request, :applied_overwork, :applied_attendances_change, :instructor_confirmation, :reflection])[:attendances]
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :applied_overwork, :instructor_confirmation, :reflection])[:attendances]
     end
 end

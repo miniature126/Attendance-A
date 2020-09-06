@@ -1,0 +1,82 @@
+<div class="modal-dialog modal-lg modal-dialog-center">
+  <div class="modal-content">
+    <div class="modal-body">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <%= form_with(model: @users, url: update_change_notice_user_path(@superior), local: true, method: :petch) do |f| %>
+        <% @users.each do |user| %>
+          <% if application_info(user) %>
+            <h4>【<%= user.name %>からの勤怠変更申請】</h4>
+            <table class="table table-bordered table-striped change-attendances__table">
+              <thead>
+                <tr>
+                  <th rowspan = 3>日付</th>
+                  <th rowspan = 3>曜日</th>
+                  <th colspan = 4>変更前</th>
+                  <th colspan = 4>変更後</th>
+                  <th rowspan = 3>備考</th>
+                  <th rowspan = 3>指示者確認㊞</th>
+                  <th rowspan = 3>変更</th>
+                  <th rowspan = 3>勤怠を確認する</th>
+                </tr>
+                <tr>
+                  <th colspan = 2>出社</th>
+                  <th colspan = 2>退社</th>
+                  <th colspan = 2>出社</th>
+                  <th colspan = 2>退社</th>
+                </tr>
+                <tr>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                  <th>時</th>
+                  <th>分</th>
+                </tr>
+              </thead>
+              
+              <tbody>
+                <% user.attendances.each do |day| %>
+                  <% f.fields_for "attendances[]", day do |attendance| %>
+                    <% if day.applied_attendances_change == @superior.id && day.instructor_confirmation == 2 %>
+                      <tr>
+                        <td><%= l(day.worked_on, format: :short) %></td>
+                        <% if day.worked_on.wday == 0 %>
+                          <td>
+                            <font color="red"><%= $days_of_the_week[day.worked_on.wday] %></fond>
+                          </td>
+                        <% elsif day.worked_on.wday == 6 %>
+                          <td>
+                            <fond color="blue"><%= $days_of_the_week[day.worked_on.wday] %></fond>
+                          </td>
+                        <% else %>
+                          <td>
+                            <%= $days_of_the_week[day.worked_on.wday] %>
+                          </td>
+                        <% end %>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><%= day.note %></td>
+                        <td></td>
+                        <td></td>
+                        <td><%= link_to "確認", users_path(user), class: btn btn-primary %></td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          <% end %>
+        <% end %>
+      <% end %>
+          
+    </div>
+  </div>
+</div>
