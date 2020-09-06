@@ -59,10 +59,10 @@
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td><%= l(day.started_at, format: :hour) %></td>
+                        <td><%= l(day.started_at.floor_to(15.minute), format: :minute) %></td>
+                        <td><%= l(day.finished_at, format: :hour) %></td>
+                        <td><%= l(day.finished_at.floor_to(15.minute), format: :minute) %></td>
                         <td><%= day.note %></td>
                         <td>
                             <%= attendance.select :change_attendances_confirmation,
