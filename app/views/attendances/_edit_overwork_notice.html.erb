@@ -54,7 +54,7 @@
                                 { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
                                 { selected: 2 }, class: "form-control", required: true %>
                         </td>
-                        <td><%= attendance.check_box :reflection, {}, "true", "false" %></td>
+                        <td><%= attendance.check_box :overwork_reflection, {}, "true", "false" %></td>
                         <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
                       </tr>
                     <% end %>
