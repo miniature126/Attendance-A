@@ -50,7 +50,7 @@ class AttendancesController < ApplicationController
     end
     flash[:success] = "勤怠情報の変更を申請しました。"
     redirect_to user_url(date: params[:date])
-  rescue ActiveRecord::RecordInvalid #トランザクションによるエラー分岐
+  rescue ActiveRecord::RecordInvalid #トランザクション例外処理
     flash[:danger] = "無効なデータ入力があった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
@@ -61,18 +61,19 @@ class AttendancesController < ApplicationController
   end
   
   def update_change_notice
-    @superior = User.find(params[:id])
-    attendances_params.each do |id, item|
-      @attendance = Attendance.find(id) #送信先に@superiorのidが含まれるため必要
-      if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
-        if @attendance.update_attributes(item)
-          flash[:success] = "勤怠変更申請の情報を更新しました。"
-        else
-          flash[:danger] = "更新をキャンセルしました。"
-        end
-      end
-    end
+    @superior = User.find(params[:id]) #送信先に@superiorのidが含まれるため必要
+    ActiveRecord::Base.transaction do #トランザクションを開始
+      attendances_params.each do |id, item|
+        attendance = Attendance.find(id)
+        #「変更」にチェックが入っている時は更新
+        attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
+      end     
+    end  
+    flash[:success] = "勤怠変更申請の情報を更新しました。"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
+  rescue ActiveRecord::RecordInvalid #トランザクション例外処理
+    flash[:danger] = "更新をキャンセルしました。"
+    redirect_to user_url(@superior)
   end
   
   # URLのidにはattendanceのidが入っている
