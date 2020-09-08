@@ -72,7 +72,7 @@ class AttendancesController < ApplicationController
         end
       end
     end
-    redirect_to user_url(@superior)
+    redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   end
   
   # URLのidにはattendanceのidが入っている
