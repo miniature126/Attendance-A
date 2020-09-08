@@ -36,6 +36,11 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
+        if attendance.started_at.present? && attendance.finished_at.present?
+          attendance.started_at_before_change = attendance.started_at
+          attendance.finished_at_before_change = attendance.finished_at
+          attendance.save
+        end
         if item[:applied_attendances_change].present?
           attendance.change_attendances_confirmation = 2
           attendance.save
@@ -67,6 +72,7 @@ class AttendancesController < ApplicationController
         end
       end
     end
+    redirect_to user_url(@superior)
   end
   
   # URLのidにはattendanceのidが入っている
