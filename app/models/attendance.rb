@@ -13,10 +13,11 @@ class Attendance < ApplicationRecord
   #退勤時間が存在する時、終了予定時間の更新は無効
   # validate :finish_overwork_is_invalid_exist_a_finished_at
   
-  # validates :finish_overwork, presence: true
-  # validates :next_day, inclusion: { in: [true, false] }
-  # validates :work_contents, presence: true
-  # validates :instructor_confirmation, presence: true
+  #残業申請、承認
+  
+  
+  #勤怠変更申請、承認
+  
   
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
