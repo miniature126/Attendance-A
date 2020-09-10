@@ -20,6 +20,8 @@ class Attendance < ApplicationRecord
   validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   validate :finish_overwork_exist_work_contents_applied_overwork_exist
+  #送信先に上長以外のユーザーは指定できない
+  validate :destination_cannot_specified_other_than_superior
   
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
@@ -52,7 +54,19 @@ class Attendance < ApplicationRecord
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   def finish_overwork_exist_work_contents_applied_overwork_exist
     if finish_overwork.present?
-      errors.add(:work_contents, :applied_overwork, "が必要です") unless work_contents.present? && applied_overwork.present?
+      unless work_contents.present? && applied_overwork.present?
+        errors.add(:work_contents, "が必要です")
+        errors.add(:applied_overwork, "が必要です")
+      end
     end
   end
+  
+  def destination_cannot_specified_other_than_superior
+    if applied_attendances_change.present? || applied_overwork.present?
+      unless User.find(params[:user][:attendances][:applied_id]).superior?
+        errors.add("上長ユーザーを選択して下さい")
+      end
+    end
+  end
+  
 end
