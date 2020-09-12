@@ -83,7 +83,10 @@ class AttendancesController < ApplicationController
   end
 
   def update_overwork_request
-    params[:user][:attendances][:overwork_confirmation] = 2
+    #指定勤務終了時間の日付を残業申請した日の日付に合わせ、保存
+    @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+    @user.save
+    params[:user][:attendances][:overwork_confirmation] = 2 #残業申請のステータスを「申請中」
     if @attendance.update_attributes(overwork_params)
       flash[:success] = "残業を申請しました。"
     else
@@ -101,7 +104,7 @@ class AttendancesController < ApplicationController
     @superior = User.find(params[:id])
     overwork_params.each do |id, item| #update_one_monthアクション参考
       @attendance = Attendance.find(id)
-      if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に
+      if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
         if @attendance.update_attributes(item)
           flash[:success] = "情報を更新しました。"
         else

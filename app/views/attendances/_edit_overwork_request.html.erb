@@ -39,13 +39,13 @@
                 <td>
                     <%= attendance.time_select :finish_overwork, 
                         default: { year: @attendance.worked_on.year, month: @attendance.worked_on.month, day: @attendance.worked_on.day }, 
-                        minute_step: 15, class: "input-sm", required: true %>
+                        minute_step: 15, class: "input-sm" %>
                 </td>
                 <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
-                <td><%= attendance.text_field :work_contents, class: "form-control", required: true %></td>
+                <td><%= attendance.text_field :work_contents, class: "form-control"%></td>
                 <td>
                   <%= attendance.collection_select :applied_overwork, @superior, :id, :name, 
-                      { include_blank: true }, class: "form-control", required: true %>
+                      { include_blank: true }, class: "form-control" %>
                 </td>
               </tr>
             <% end %>
