@@ -1,6 +1,5 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
-  # before_action :set_superior_attendances, only: :edit_overwork_request
   before_action :logged_in_user, only: [:update, :edit_one_month]
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
@@ -87,10 +86,12 @@ class AttendancesController < ApplicationController
     @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
     @user.save
     params[:user][:attendances][:overwork_confirmation] = 2 #残業申請のステータスを「申請中」
-    if @attendance.update_attributes(overwork_params)
-      flash[:success] = "残業を申請しました。"
-    else
-      flash[:danger] = "申請をキャンセルしました。"
+    if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
+      if @attendance.update_attributes(overwork_params)
+        flash[:success] = "残業を申請しました。"
+      else
+        flash[:danger] = "申請をキャンセルしました。"
+      end
     end
     redirect_to user_url(@user)
   end
@@ -102,16 +103,19 @@ class AttendancesController < ApplicationController
   
   def update_overwork_notice
     @superior = User.find(params[:id])
-    overwork_params.each do |id, item| #update_one_monthアクション参考
-      @attendance = Attendance.find(id)
-      if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-        if @attendance.update_attributes(item)
-          flash[:success] = "情報を更新しました。"
-        else
-          flash[:danger] = "更新をキャンセルしました。"
-        end
+    ActiveRecord::Base.transaction do #トランザクションを開始
+      overwork_params.each do |id, item| #update_one_monthアクション参考
+        @attendance = Attendance.find(id)
+        user = User.find_by(id: @attendance.user_id)
+        user.desig_finish_worktime = @attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
+        user.save
+        @attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
       end
     end
+    flash[:success] = "情報を更新しました。"
+    redirect_to user_url(@superior)
+  rescue ActiveRecord::RecordInvalid #トランザクションエラー分岐
+    flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
     redirect_to user_url(@superior)
   end
   
@@ -122,12 +126,6 @@ class AttendancesController < ApplicationController
       @attendance = Attendance.find(params[:id])
       @user = User.find(@attendance.user_id)
     end
-    
-    # #上長ユーザーを取得(ログインしているユーザーが上長だった場合は、そのユーザーは除く)
-    # def set_superior_attendances
-    #   @attendance = Attendance.find(params[:id]) #paramsから取得したユーザー
-    #   @superior = User.where(superior: true).where.not(id: @attendance.user_id)
-    # end
     
     #１ヶ月分の勤怠申請情報を扱う
     def attendances_params
