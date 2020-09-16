@@ -32,16 +32,37 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month #勤怠変更の申請
+    attendance_id = []
+    attendances = []
+    params[:user][:attendances].each do |id, item|
+      if item[:applied_attendances_change].present?
+        attendance_id << id
+        attendances << item
+      end
+    end
     ActiveRecord::Base.transaction do #トランザクションを開始
-      attendances_params.each do |id, item|
-        attendance = Attendance.find(id) #レコードを探し格納
+      attendances.each do |id|
+        attendance = Attendance.find(id)
+        @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+        @user.save #指定勤務終了時間の日付を、申請日に合わせて保存。
+        #出勤時間、退勤時間が既に存在する場合は、変更前カラムに移動。
         if attendance.started_at.present? && attendance.finished_at.present?
           attendance.started_at_before_change = attendance.started_at
           attendance.finished_at_before_change = attendance.finished_at
           attendance.save
         end
-        if item[:applied_attendances_change].present?
-          attendance.change_attendances_confirmation = 2
+        
+      attendances.each do |id, item|
+        attendance = Attendance.find(id) #レコードを探し格納
+        @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+        @user.save
+        if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
+          attendance.started_at_before_change = attendance.started_at #出勤時間を変更前出勤時間カラムに移動
+          attendance.finished_at_before_change = attendance.finished_at #退勤時間を変更前退勤時間カラムに移動
+          attendance.save
+        end
+        if item[:applied_attendances_change].present? #勤怠変更申請先のidが存在する場合のみ
+          attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
         end
         attendance.update_attributes!(item) #入力データ上書き
@@ -105,11 +126,11 @@ class AttendancesController < ApplicationController
     @superior = User.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを開始
       overwork_params.each do |id, item| #update_one_monthアクション参考
-        @attendance = Attendance.find(id)
-        user = User.find_by(id: @attendance.user_id)
-        user.desig_finish_worktime = @attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
+        attendance = Attendance.find(id)
+        user = User.find_by(id: attendance.user_id)
+        user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save
-        @attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
+        attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
       end
     end
     flash[:success] = "情報を更新しました。"

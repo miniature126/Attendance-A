@@ -5,6 +5,7 @@ class Attendance < ApplicationRecord
   validates :note, length: { maximum: 50 }
   #残業申請、承認
   #勤怠変更申請、承認
+  validates :applied_attendances_change, presence: true, on: :update_one_month
   
   
   #出勤時間が存在しない場合、退勤時間は無効
@@ -19,9 +20,8 @@ class Attendance < ApplicationRecord
   validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   validate :finish_overwork_exist_work_contents_applied_overwork_exist
-  #残業申請送信先に上長以外のユーザーは指定できない
-  # validate :destination_cannot_specified_other_than_superior_overwork
-  
+
+
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
   end
@@ -45,8 +45,10 @@ class Attendance < ApplicationRecord
   
   #指定勤務終了時間より早い残業終了予定時間は無効
   def finish_overwork_earlier_than_desig_finish_worktime_is_invalid
-    if user.desig_finish_worktime > finish_overwork
-      errors.add(:desig_finish_worktime, "より早い時間は無効です")
+    if finish_overwork.present?
+      if user.desig_finish_worktime >= finish_overwork
+        errors.add(:desig_finish_worktime, "より早い時間は無効です")
+      end
     end
   end
   
@@ -59,14 +61,5 @@ class Attendance < ApplicationRecord
       end
     end
   end
-  
-  #残業申請先には上長しか選択できない
-  # def destination_cannot_specified_other_than_superior_overwork
-  #   if applied_overwork.present?
-  #     unless User.find(:applied_overwork).superior? #←動かない。ユーザー呼べてない。
-  #       errors.add("上長ユーザーを選択して下さい")
-  #     end
-  #   end
-  # end
   
 end
