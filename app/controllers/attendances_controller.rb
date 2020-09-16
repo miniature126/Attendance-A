@@ -32,27 +32,8 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month #勤怠変更の申請
-    attendance_id = []
-    attendances = []
-    params[:user][:attendances].each do |id, item|
-      if item[:applied_attendances_change].present?
-        attendance_id << id
-        attendances << item
-      end
-    end
     ActiveRecord::Base.transaction do #トランザクションを開始
-      attendances.each do |id|
-        attendance = Attendance.find(id)
-        @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
-        @user.save #指定勤務終了時間の日付を、申請日に合わせて保存。
-        #出勤時間、退勤時間が既に存在する場合は、変更前カラムに移動。
-        if attendance.started_at.present? && attendance.finished_at.present?
-          attendance.started_at_before_change = attendance.started_at
-          attendance.finished_at_before_change = attendance.finished_at
-          attendance.save
-        end
-        
-      attendances.each do |id, item|
+      attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
         @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
         @user.save
@@ -64,8 +45,8 @@ class AttendancesController < ApplicationController
         if item[:applied_attendances_change].present? #勤怠変更申請先のidが存在する場合のみ
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
+          attendance.update_attributes!(item) #入力データ上書き
         end
-        attendance.update_attributes!(item) #入力データ上書き
       end
     end
     flash[:success] = "勤怠情報の変更を申請しました。"
