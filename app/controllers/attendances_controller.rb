@@ -32,17 +32,17 @@ class AttendancesController < ApplicationController
   end
   
   def update_one_month #勤怠変更の申請
-    ActiveRecord::Base.transaction do #トランザクションを開始
+    ActiveRecord::Base.transaction do #モデル名.transaction do。複数モデルをいじりたい場合はActiveRecord::Base。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
-        @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
-        @user.save
-        if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
-          attendance.started_at_before_change = attendance.started_at #出勤時間を変更前出勤時間カラムに移動
-          attendance.finished_at_before_change = attendance.finished_at #退勤時間を変更前退勤時間カラムに移動
-          attendance.save
-        end
         if item[:applied_attendances_change].present? #勤怠変更申請先のidが存在する場合のみ
+          @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+          @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。
+          if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
+            attendance.started_at_before_change = attendance.started_at #出勤時間を変更前出勤時間カラムに移動
+            attendance.finished_at_before_change = attendance.finished_at #退勤時間を変更前退勤時間カラムに移動
+            attendance.save
+          end
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
           attendance.update_attributes!(item) #入力データ上書き
@@ -52,7 +52,7 @@ class AttendancesController < ApplicationController
     flash[:success] = "勤怠情報の変更を申請しました。"
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid #トランザクション例外処理
-    flash[:danger] = "無効なデータ入力があった為、更新をキャンセルしました。"
+    flash[:danger] = "無効なデータ入力、または未入力項目があった為、更新をキャンセルしました。"
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
