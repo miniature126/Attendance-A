@@ -37,7 +37,7 @@
               <td><%= attendance.text_field :note, class: "form-control" %></td>
               <td>
                   <%= attendance.collection_select :applied_attendances_change, @superior, :id, :name,
-                      { include_blank: true }, class: "form-control" %>
+                      { include_blank: true }, class: "form-control", requied: true %>
               </td>
             </tr>
           <% end %>

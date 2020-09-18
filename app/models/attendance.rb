@@ -1,6 +1,7 @@
 class Attendance < ApplicationRecord
   belongs_to :user
   
+  #余裕があればバリデーションをもっと見やすく！
   validates :worked_on, presence: true
   validates :note, length: { maximum: 50 }
   #残業申請、承認

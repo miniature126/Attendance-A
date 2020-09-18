@@ -37,7 +37,7 @@ class AttendancesController < ApplicationController
         attendance = Attendance.find(id) #レコードを探し格納
         if item[:applied_attendances_change].present? #勤怠変更申請先のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
-          @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。
+          @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる
           if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
             attendance.started_at_before_change = attendance.started_at #出勤時間を変更前出勤時間カラムに移動
             attendance.finished_at_before_change = attendance.finished_at #退勤時間を変更前退勤時間カラムに移動
