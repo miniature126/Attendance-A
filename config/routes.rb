@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'approval/edit_approval_superior_notice'
+
   root    'static_pages#top'
   get     '/signup', to: 'users#new'
   
@@ -21,6 +23,8 @@ Rails.application.routes.draw do
       patch 'attendances/update_overwork_request'
       get 'attendances/edit_overwork_notice'
       patch 'update_overwork_notice', to: "attendances#update_overwork_notice"
+      get   'approvals/edit_approval_superior_notice'
+      patch 'update_approval_superior_notice', to: "approvals#update_approval_superior_notice"
     end
     resources :attendances, only: :update
   end
