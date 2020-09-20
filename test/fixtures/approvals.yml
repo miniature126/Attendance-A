@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  applied_approval_superior: 1
+  approval_superior_confirmation: 1
+  approval_superior_reflection: false
+  applied_on: 2020-09-20 15:32:48
+  user: one
+
+two:
+  applied_approval_superior: 1
+  approval_superior_confirmation: 1
+  approval_superior_reflection: false
+  applied_on: 2020-09-20 15:32:48
+  user: two
