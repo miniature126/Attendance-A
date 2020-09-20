@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200920063248) do
+ActiveRecord::Schema.define(version: 20200920063743) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
     t.integer "approval_superior_confirmation"
     t.boolean "approval_superior_reflection"
-    t.datetime "applied_on"
+    t.datetime "applied_month"
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
