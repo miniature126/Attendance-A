@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'approval/edit_approval_superior_notice'
 
   root    'static_pages#top'
   get     '/signup', to: 'users#new'

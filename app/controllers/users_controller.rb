@@ -8,6 +8,7 @@ class UsersController < ApplicationController
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all, :update_basic_info_all]
   before_action :superior_or_correct_user, only: :show
   before_action :set_one_month, only: :show
+  before_action :set_one_month_approval, only: :show
   
   def index
     #全てのユーザー、ページネーション設定、form_withのtext_fieldで受け取ったparams[:search]の中身をself.searchに引数として渡す

@@ -58,21 +58,36 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
   
-    #@userが現在ログインしているユーザー、もしくは管理者権限を持ったユーザーかどうかを確認
-    def admin_or_correct_user
-      @user = User.find(params[:user_id]) if @user.blank?
-      unless current_user?(@user) || current_user.admin?
-        flash[:danger] = "権限がありません。"
-        redirect_to root_url
-      end
+  #@userが現在ログインしているユーザー、もしくは管理者権限を持ったユーザーかどうかを確認
+  def admin_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.admin?
+      flash[:danger] = "権限がありません。"
+      redirect_to root_url
     end
+  end
     
-    #@userが現在ログインしているユーザー、もしくは上長ユーザーかどうかを確認
-    def superior_or_correct_user
-      @user = User.find(params[:user_id]) if @user.blank?
-      unless current_user?(@user) || current_user.superior?
-        flash[:danger] = "アクセスできません。"
-        redirect_to root_url
-      end
+  #@userが現在ログインしているユーザー、もしくは上長ユーザーかどうかを確認
+  def superior_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.superior?
+      flash[:danger] = "アクセスできません。"
+      redirect_to root_url
     end
+  end
+    
+  #ページ出力前に1ヶ月の勤怠申請データを確認・セットする
+  def set_one_month_approval
+    @approvals = @user.approvals.where(applied_month: @last_day)
+    
+    unless #その月の勤怠申請データカラムが存在しなかった場合
+      ActiveRecord::Base.transaction do #トランザクションを開始
+        @user.approvals.create!(applied_month: @last_day)
+      end
+      @approvals = @user.approvals.where(applied_month: @last_day)
+    end
+  rescure ActiveRecord::RecordInvalid #トランザクションエラー分岐
+    flash[:danger] = "当月の勤怠申請情報の取得に失敗しました。再アクセスしてください。"
+    redirect_to root_url
+  end
 end
