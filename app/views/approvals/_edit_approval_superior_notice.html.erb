@@ -3,7 +3,7 @@
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
       <h1>【　　からの1ヶ月分勤怠申請】</h1>
-      <%= form_with(model: @user, url: update_approval_superior_notice_user_path(@user), local: true, method: :patch) do |f| %>
+      <%= form_with(model: @user, url: user_update_approvals_superior_notice_path(params[:user_id]), local: true, method: :patch) do |f| %>
       <table class="table">
         <thead>
           <tr>
