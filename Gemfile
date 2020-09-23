@@ -16,7 +16,8 @@ gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
 gem 'rounding'
 
-gem 'pry-rails'
+gem 'pry-rails' #コンソール出力整形
+gem 'awesome_rails_console'
 
 group :development, :test do
   gem 'sqlite3'

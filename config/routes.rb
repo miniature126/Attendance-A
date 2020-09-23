@@ -7,7 +7,8 @@ Rails.application.routes.draw do
   get     '/login', to: 'sessions#new'
   post    '/login', to: 'sessions#create'
   delete  '/logout', to: 'sessions#destroy'
-      
+  
+  #resources→7つのアクションを一括生成してくれるメソッド
   resources :users do
     member do
       get 'edit_basic_info'
@@ -22,9 +23,13 @@ Rails.application.routes.draw do
       patch 'attendances/update_overwork_request'
       get 'attendances/edit_overwork_notice'
       patch 'update_overwork_notice', to: "attendances#update_overwork_notice"
-      get   'approvals/edit_approval_superior_notice'
-      patch 'update_approval_superior_notice', to: "approvals#update_approval_superior_notice"
-    end
+   end
     resources :attendances, only: :update
+    
+    #get〜とpatch〜はアクション名。to:〜はapprovalsコントローラでアクションを扱うために必要。
+    #member doに入れると、URLに入るidはapprovalのidになる。はず。
+    get 'edit_approvals_superior_notice', to: "approvals#edit_approval_superior_notice"
+    patch 'update_approvals_superior_notice', to: "approvals#update_approval_superior_notice"
+ 
   end
 end

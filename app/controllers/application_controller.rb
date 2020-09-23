@@ -44,7 +44,6 @@ class ApplicationController < ActionController::Base
     #ユーザーに紐付く１ヶ月分のレコードを検索し取得
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     @approvals = @user.approvals.where(applied_month: @last_day)
-
     #対象の月の日数とユーザーに紐付く１ヶ月分のレコードの日数が一致するか否か
     unless one_month.count == @attendances.count
       ActiveRecord::Base.transaction do #トランザクションを開始
