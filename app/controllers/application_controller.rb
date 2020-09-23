@@ -43,14 +43,17 @@ class ApplicationController < ActionController::Base
     one_month = [*@first_day..@last_day]
     #ユーザーに紐付く１ヶ月分のレコードを検索し取得
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+    @approvals = @user.approvals.where(applied_month: @last_day)
 
     #対象の月の日数とユーザーに紐付く１ヶ月分のレコードの日数が一致するか否か
     unless one_month.count == @attendances.count
       ActiveRecord::Base.transaction do #トランザクションを開始
         #繰り返し処理により１ヶ月分の勤怠データを生成
         one_month.each { |day| @user.attendances.create!(worked_on: day) }
+        @user.approvals.create!(applied_month: @last_day)
       end
       @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+      @approvals = @user.approvals.where(applied_month: @last_day)
     end
     
   rescue ActiveRecord::RecordInvalid #トランザクションによるエラー分岐
@@ -75,19 +78,5 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
     end
   end
-    
-  #ページ出力前に1ヶ月の勤怠申請データを確認・セットする
-  def set_one_month_approval
-    @approvals = @user.approvals.where(applied_month: @last_day)
-    
-    unless #その月の勤怠申請データカラムが存在しなかった場合
-      ActiveRecord::Base.transaction do #トランザクションを開始
-        @user.approvals.create!(applied_month: @last_day)
-      end
-      @approvals = @user.approvals.where(applied_month: @last_day)
-    end
-  rescure ActiveRecord::RecordInvalid #トランザクションエラー分岐
-    flash[:danger] = "当月の勤怠申請情報の取得に失敗しました。再アクセスしてください。"
-    redirect_to root_url
-  end
+
 end
