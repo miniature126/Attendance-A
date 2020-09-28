@@ -30,6 +30,6 @@ Rails.application.routes.draw do
     #member doに入れると、URLに入るidはapprovalのidになる。はず。
     get 'edit_approvals_superior_notice', to: "approvals#edit_approval_superior_notice"
     patch 'update_approvals_superior_notice', to: "approvals#update_approval_superior_notice"
- 
+    patch 'update_approvals_superior_request', to: "approvals#edit_approval_superior_request"
   end
 end
