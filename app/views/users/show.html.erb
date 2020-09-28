@@ -144,7 +144,7 @@
                         <%# 今回superior.idは"2"か"3" %>
                             <% if day.applied_overwork == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
                                 <% if day.overwork_confirmation == 1 %>
-                                    <%= superior.name %>へ残業申請中(なし)
+                                    申請なし
                                 <% elsif day.overwork_confirmation == 2 %>
                                     <%= superior.name %>へ残業申請中
                                 <% elsif day.overwork_confirmation == 3 %>
@@ -155,7 +155,7 @@
                             <% end %>
                             <% if day.applied_attendances_change == superior.id %>
                                 <% if day.change_attendances_confirmation == 1 %>
-                                    <%= superior.name %>へ勤怠変更申請中(なし)
+                                    申請なし
                                 <% elsif day.change_attendances_confirmation == 2 %>
                                     <%= superior.name %>へ勤怠変更申請中
                                 <% elsif day.change_attendances_confirmation == 3 %>
@@ -179,10 +179,26 @@
                 <td rowspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
                 <td rowspan="2", colspan="5"></td>
                 <td>
-                    <%= form_with(model: @user, local: true, ) do |f| %>
-                        <div><%= f.label "所属長承認　未" %></div>
-                        <div><%= f.select :name, [[]], class: "" %></div>
-                        <div><%= f.submit "申請", class: "btn btn-primary" %></div>
+                    所属長承認
+                    <% if @approval.present? %> <%# @approvalが取得できるまでの仮置き %>
+                    <% @superior.each do |superior| %>
+                        <% if superior.id == @approval.applied_approval_superior %>
+                            <% if @approval.approval_superior_confirmation == 1 %>
+                                申請なし
+                            <% elsif @approval.approval_superior_confirmation == 2 %>
+                                <%= @applied_superior.name %>へ申請中
+                            <% elsif @approval.approval_superior_confirmation == 3 %>
+                                <%= @applied_superior.name %>より承認済
+                            <% elsif @approval.approval_superior_confirmation == 4 %>
+                                <%= @applied_superior.name %>より否認
+                            <% end %>
+                        <% end %> <%# @approvalが取得できるまでの仮置き %>
+                    <% end %>
+                    <% end %>
+                    <%= form_with(model: @approval, local: true, ) do |f| %>
+                        <%= f.collection_select :applied_approval_superior, @superior, :id, :name,
+                            { include_blank: true }, class: "form-control" %>
+                        <%= f.submit "申請", class: "btn btn-primary" %>
                     <% end %>
                 </td>
             </tr>

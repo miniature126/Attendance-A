@@ -6,7 +6,7 @@ class ApprovalsController < ApplicationController
   end
   
   def edit_approval_superior_notice
-    @users = User.find(params[:user_id])
+    @superior = User.find(params[:user_id])
   end
   
   def update_approval_superior_notice
