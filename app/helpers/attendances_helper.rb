@@ -26,8 +26,8 @@ module AttendancesHelper
   end
   
   #残業申請中のレコードが存在する場合true、存在しない場合はfalseを返す
-  def overwork_application_info(user)
-    if user.attendances.where(overwork_confirmation: 2).any?
+  def overwork_application_info(user, superior)
+    if user.attendances.where(applied_overwork: superior.id).any?
       true
     else
       false
@@ -35,8 +35,8 @@ module AttendancesHelper
   end
   
   #勤怠変更申請中のレコードが存在する場合はtrue、存在しない場合はfalseを返す
-  def change_attendance_application_info(user)
-    if user.attendances.where(change_attendances_confirmation: 2).any?
+  def change_attendance_application_info(user, superior)
+    if user.attendances.where(applied_attendances_change: superior.id).any?
       true
     else
       false

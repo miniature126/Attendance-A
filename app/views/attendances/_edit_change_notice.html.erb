@@ -4,7 +4,7 @@
       <button type="button" class="close" data-dismiss="modal">&times;</button>
       <%= form_with(model: @users, url: update_change_notice_user_path(@superior), local: true, method: :patch) do |f| %>
         <% @users.each do |user| %>
-          <% if change_attendance_application_info(user) %>
+          <% if change_attendance_application_info(user, @superior) %>
             <h4>【<%= user.name %>からの勤怠変更申請】</h4>
             <table class="table table-bordered table-striped change-attendances__table">
               <thead>
