@@ -17,7 +17,7 @@ gem 'jbuilder',     '~> 2.5'
 gem 'rounding'
 
 gem 'pry-rails' #コンソール出力整形
-gem 'awesome_rails_console'
+# gem 'awesome_rails_console' エラーが出る。なぜかは分からない。
 
 group :development, :test do
   gem 'sqlite3'
