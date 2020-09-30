@@ -195,7 +195,7 @@
                         <% end %> <%# @approvalが取得できるまでの仮置き %>
                     <% end %>
                     <% end %>
-                    <% form_with(model: @approval, url:  local: true, ) do |f| %>
+                    <%= form_with(model: @approval, url: user_update_approvals_superior_request_path(@user), local: true, method: :patch) do |f| %>
                         <%= f.collection_select :applied_approval_superior, @superior, :id, :name,
                             { include_blank: true }, class: "form-control" %>
                         <%= f.submit "申請", class: "btn btn-primary" %>

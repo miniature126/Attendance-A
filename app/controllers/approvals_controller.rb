@@ -11,4 +11,10 @@ class ApprovalsController < ApplicationController
   
   def update_approval_superior_notice
   end
+
+  private
+    #1ヶ月分の勤怠申請情報を扱う
+    def approval_params
+      params.require(:user).permit(approvals: [:applied_approval_superior, :approval_confirmation, :approval_superior_reflection])[:approvals]
+    end
 end

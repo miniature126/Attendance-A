@@ -99,7 +99,7 @@ class AttendancesController < ApplicationController
   end
   
   def edit_overwork_notice
-    @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？
+    @superior = User.find(params[:id]) #なんでこのidはAttendanceのidじゃなくてUserのid？→ルーティング見直しの必要あり！
     @users = User.all
   end
   
