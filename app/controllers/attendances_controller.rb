@@ -129,6 +129,7 @@ class AttendancesController < ApplicationController
       @user = User.find(@attendance.user_id)
     end
     
+    #一般→上長(上長→上長)と、#上長→一般(上長→上長)でストロングパラメータを分ける
     #１ヶ月分の勤怠申請情報を扱う
     def attendances_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :change_attendances_confirmation, :change_attendances_reflection])[:attendances]

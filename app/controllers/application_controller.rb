@@ -49,6 +49,7 @@ class ApplicationController < ActionController::Base
       ActiveRecord::Base.transaction do #トランザクションを開始
         #繰り返し処理により１ヶ月分の勤怠データを生成
         one_month.each { |day| @user.attendances.create!(worked_on: day) }
+        @user.approvals.create!(applied_month: @first_day.end_of_month)
       end
       @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     end
