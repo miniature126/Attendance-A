@@ -179,7 +179,7 @@
                 <td rowspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
                 <td rowspan="2", colspan="5"></td>
                 <td>
-                    所属長承認
+                    所属長承認&nbsp;
                     <% if @approval.approval_superior_confirmation == 1 %>
                         申請なし
                     <% end %>
@@ -194,10 +194,12 @@
                             <% end %>
                         <% end %>
                     <% end %>
-                    <%= form_with(model: @approval, url: user_approval_path(@user, @approval), local: true, method: :patch) do |f| %>
-                        <%= f.collection_select :applied_approval_superior, @superior, :id, :name,
-                            { include_blank: true }, class: "form-control" %>
-                        <%= f.submit "申請", class: "btn btn-primary" %>
+                    <% if @approval.approval_superior_confirmation == 1 || @approval.approval_superior_confirmation == 4 %>
+                        <%= form_with(model: @approval, url: user_approval_path(@user, @approval), local: true, method: :patch) do |f| %>
+                            <%= f.collection_select :applied_approval_superior, @superior, :id, :name,
+                                { include_blank: true }, class: "form-control" %>
+                            <%= f.submit "申請", class: "btn btn-primary" %>
+                        <% end %>
                     <% end %>
                 </td>
             </tr>
