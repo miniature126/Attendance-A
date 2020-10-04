@@ -3,13 +3,6 @@ class ApprovalsController < ApplicationController
   def update
     @user = User.find(params[:user_id])
     @approval = Approval.find(params[:id])
-    # if User.find(params[:approval][:applied_approval_superior]).superior?
-    #   if @approval.update_attributes(approval_request_params)
-    #     flash[:success] = "#{@approval.applied_month.month}月の勤怠を申請しました。"
-    #   else
-    #     flash[:danger] = "#{@approval.applied_month.month}月の勤怠申請をキャンセルしました。"
-    #   end
-    # end
     ActiveRecord::Base.transaction do #トランザクションを用いて更新
       @approval.approval_superior_confirmation = 2
       @approval.save
@@ -24,6 +17,7 @@ class ApprovalsController < ApplicationController
   
   def edit_approval_superior_notice
     @superior = User.find(params[:user_id])
+    @user = User.all
   end
   
   def update_approval_superior_notice
