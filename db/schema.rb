@@ -54,10 +54,10 @@ ActiveRecord::Schema.define(version: 20200930100327) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-09-30 08:00:00"
+    t.datetime "basic_time", default: "2020-10-01 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "desig_start_worktime", default: "2020-09-30 08:00:00"
-    t.datetime "desig_finish_worktime", default: "2020-09-30 17:00:00"
+    t.datetime "desig_start_worktime", default: "2020-10-01 08:00:00"
+    t.datetime "desig_finish_worktime", default: "2020-10-01 17:00:00"
     t.integer "employee_number"
     t.integer "card_id"
     t.index ["email"], name: "index_users_on_email", unique: true
