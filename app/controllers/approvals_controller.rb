@@ -17,10 +17,22 @@ class ApprovalsController < ApplicationController
   
   def edit_approval_superior_notice
     @superior = User.find(params[:user_id])
-    @user = User.all
+    @users = User.all
   end
   
   def update_approval_superior_notice
+    @superior = User.find(params[:user_id])
+    ActiveRecord::base.transaction do #トランザクション処理開始
+      approval_notice_params.each do |id, item|
+        approval = Approval.find(id)
+        approval.update_attributes!(item) if ActiveRecord::Type::Boolean.mew.cast(params[:user][:approvals][id][:approval_superior_reflection]) #string型→boolean型へ変更
+      end
+    end
+    flash[:success] = "勤怠を承認しました。"
+    redirect_to user_url(@superior)
+  rescue ActiveRecord::RecordInvalid #トランザクション例外処理
+    flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
+    redirect_to user_url(@superior)
   end
 
   private

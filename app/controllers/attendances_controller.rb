@@ -110,7 +110,7 @@ class AttendancesController < ApplicationController
         attendance = Attendance.find(id)
         user = User.find_by(id: attendance.user_id)
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
-        user.save
+        user.save #基本時間の日付を残業申請日に合わせて変更、保存
         attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
       end
     end

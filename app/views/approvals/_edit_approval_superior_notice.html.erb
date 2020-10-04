@@ -2,27 +2,34 @@
   <div class="modal-content">
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-      <h1>【　　からの1ヶ月分勤怠申請】</h1>
-      <%= form_with(model: @user, url: user_update_approvals_superior_notice_path(params[:user_id]), local: true, method: :patch) do |f| %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>a</th>
-            <th>d</th>
-            <th>c</th>
-            <th>d</th>
-          </tr>
-        </thead>
-          
-        <tbody>
-          <tr>
-            <td>A</td>
-            <td>B</td>
-            <td>C</td>
-            <td>D</td>
-          </tr>
-        </tbody>
-      </table>
+      <% @users.each do |user| %>
+        <% if approval_superior_application_info(user, @superior) %>
+          <h1>【<%= user.name %>からの1ヶ月分勤怠申請】</h1>
+          <%= form_with(model: user, url: user_update_approvals_superior_notice_path(user), local: true, method: :patch) do |f| %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>月</th>
+                <th>指示者確認㊞</th>
+                <th>変更</th>
+                <th>勤怠を確認する</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <% user.approvals.each do |day| %>
+                <%= f.fields_for "approval[]", day do |approval| %>
+                
+                  <tr>
+                    <td>A</td>
+                    <td>B</td>
+                    <td>C</td>
+                    <td>D</td>
+                  </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
       <% end %>
     </div>
   </div>
