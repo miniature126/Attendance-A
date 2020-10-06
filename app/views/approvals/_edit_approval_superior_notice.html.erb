@@ -6,28 +6,31 @@
         <% if approval_superior_application_info(user, @superior) %>
           <h1>【<%= user.name %>からの1ヶ月分勤怠申請】</h1>
           <%= form_with(model: user, url: user_update_approvals_superior_notice_path(user), local: true, method: :patch) do |f| %>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>月</th>
-                <th>指示者確認㊞</th>
-                <th>変更</th>
-                <th>勤怠を確認する</th>
-              </tr>
-            </thead>
-            
-            <tbody>
-              <% user.approvals.each do |day| %>
-                <%= f.fields_for "approval[]", day do |approval| %>
-                
-                  <tr>
-                    <td>A</td>
-                    <td>B</td>
-                    <td>C</td>
-                    <td>D</td>
-                  </tr>
-              <% end %>
-            </tbody>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>月</th>
+                  <th>指示者確認㊞</th>
+                  <th>変更</th>
+                  <th>勤怠を確認する</th>
+                </tr>
+              </thead>
+              
+              <tbody>
+                <% user.approvals.each do |day| %>
+                  <%= f.fields_for "approval[]", day do |approval| %>
+                    <tr>
+                      <td><%= day.applied_month %></td>
+                      <td><%= approval.select :approval_superior_confirmation,
+                              { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 }, 
+                              class: "form-control", required: true %></td>
+                      <td><%= approval.check_box :approval_superior_reflection, {}, "true", "false" %></td>
+                      <td><%= link_to "確認", user_url(user), class: "btn btn-primary" %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            <% end %>
           </table>
         <% end %>
       <% end %>
