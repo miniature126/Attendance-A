@@ -5,7 +5,7 @@
       <% @users.each do |user| %>
         <% if approval_superior_application_info(user, @superior) %>
           <h4>【<%= user.name %>からの1ヶ月分勤怠申請】</h4>
-          <%= form_with(model: user, url: user_update_approvals_superior_notice_path(user), local: true, method: :patch) do |f| %>
+          <%= form_with(model: user, url: user_update_approvals_superior_notice_path(@superior), local: true, method: :patch) do |f| %>
             <table class="table table-bordered table-striped approval-superior__table">
               <thead>
                 <tr>
@@ -18,15 +18,18 @@
               
               <tbody>
                 <% user.approvals.each do |day| %>
-                  <%= f.fields_for "approval[]", day do |approval| %>
-                    <tr>
-                      <td><%= day.applied_month %></td>
-                      <td><%= approval.select :approval_superior_confirmation,
-                              { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 }, 
-                              { selected: 2 }, class: "form-control", required: true %></td>
-                      <td><%= approval.check_box :approval_superior_reflection, {}, "true", "false" %></td>
-                      <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
-                    </tr>
+                  <%# その月の申請先idとお知らせを開いている上長のidが一致、且つステータスが申請中の場合 %>
+                  <% if day.applied_approval_superior == @superior.id && day.approval_superior_confirmation == 2 %>
+                    <%= f.fields_for "approvals[]", day do |approval| %>
+                      <tr>
+                        <td><%= day.applied_month %></td>
+                        <td><%= approval.select :approval_superior_confirmation,
+                                { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 }, 
+                                { selected: 2 }, class: "form-control", required: true %></td>
+                        <td><%= approval.check_box :approval_superior_reflection, {}, "true", "false" %></td>
+                        <td><%= link_to "確認", user_path(user), class: "btn btn-primary" %></td>
+                      </tr>
+                    <% end %>
                   <% end %>
                 <% end %>
               </tbody>
