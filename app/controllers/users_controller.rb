@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @approval = Approval.find_by(applied_month: @last_day)
+    @approval = Approval.find_by(user_id: current_user.id, applied_month: @last_day)
     @worked_sum = @attendances.where.not(started_at: nil).count
     @approval_application_sum = Approval.where(approval_superior_confirmation: 2).where(applied_approval_superior: params[:id]).count
     @overwork_application_sum = Attendance.where(overwork_confirmation: 2).where(applied_overwork: params[:id]).count

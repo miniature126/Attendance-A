@@ -2,10 +2,10 @@
   <div class="modal-content">
     <div class="modal-body">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-      <% @users.each do |user| %>
-        <% if approval_superior_application_info(user, @superior) %>
-          <h4>【<%= user.name %>からの1ヶ月分勤怠申請】</h4>
-          <%= form_with(model: user, url: user_update_approvals_superior_notice_path(@superior), local: true, method: :patch) do |f| %>
+      <%= form_with(model: @users, url: user_update_approvals_superior_notice_path(@superior), local: true, method: :patch) do |f| %>
+        <% @users.each do |user| %>
+          <% if approval_superior_application_info(user, @superior) %>
+            <h4>【<%= user.name %>からの1ヶ月分勤怠申請】</h4>
             <table class="table table-bordered table-striped approval-superior__table">
               <thead>
                 <tr>
@@ -34,9 +34,9 @@
                 <% end %>
               </tbody>
             </table>
-            <%= f.submit "変更を送信する", class: "btn btn-primary center-block" %>
           <% end %>
         <% end %>
+        <%= f.submit "変更を送信する", class: "btn btn-primary center-block" %>
       <% end %>
     </div>
   </div>
