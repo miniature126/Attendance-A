@@ -22,7 +22,7 @@
                   <% if day.applied_approval_superior == @superior.id && day.approval_superior_confirmation == 2 %>
                     <%= f.fields_for "approvals[]", day do |approval| %>
                       <tr>
-                        <td><%= day.applied_month %></td>
+                        <td><%= l(day.applied_month, format: :month) %></td>
                         <td><%= approval.select :approval_superior_confirmation,
                                 { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 }, 
                                 { selected: 2 }, class: "form-control", required: true %></td>
