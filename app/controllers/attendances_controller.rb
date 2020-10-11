@@ -35,7 +35,7 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #モデル名.transaction do。複数モデルをいじりたい場合はActiveRecord::Base。
       attendances_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
-        if item[:applied_attendances_change].present? #勤怠変更申請先のidが存在する場合のみ
+        if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる
           if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
@@ -46,6 +46,10 @@ class AttendancesController < ApplicationController
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
           attendance.update_attributes!(item) #入力データ上書き
+          #attendanceのidに紐づくCorrectionモデルのレコードを作成、既に作成していればattendanceのidを元に引っ張る
+          #worked_on, started_at(started_at_before_change), finished_at(finished_at_before_change),
+          #applied_attendances_change, approval_date(currentで良い？)の情報を上書き
+          #保存
         end
       end
     end

@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2020-10-11
+  before_attendance_time: 2020-10-11 15:48:38
+  before_leaving_time: 2020-10-11 15:48:38
+  attendance_time: 2020-10-11 15:48:38
+  leaving_time: 2020-10-11 15:48:38
+  instructor: 1
+  approval_date: 2020-10-11
+  attendance: one
+
+two:
+  date: 2020-10-11
+  before_attendance_time: 2020-10-11 15:48:38
+  before_leaving_time: 2020-10-11 15:48:38
+  attendance_time: 2020-10-11 15:48:38
+  leaving_time: 2020-10-11 15:48:38
+  instructor: 1
+  approval_date: 2020-10-11
+  attendance: two
