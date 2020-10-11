@@ -46,11 +46,18 @@ class AttendancesController < ApplicationController
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
           attendance.update_attributes!(item) #入力データ上書き
-          #attendanceのidに紐づくCorrectionモデルのレコードを作成、既に作成していればattendanceのidを元に引っ張る
-          #worked_on, started_at(started_at_before_change), finished_at(finished_at_before_change),
-          #applied_attendances_change, approval_date(currentで良い？)の情報を上書き
-          #保存
         end
+        if 
+        @user.attendance.corrections.create!(date: attendance.worked_on,
+                                             attendance_time: attendance.started_at,
+                                             leaving_time: attendance.finished_at,
+                                             instructor: attendance.applied_attendances_change,
+                                             approval_date: Date.current)
+        
+        #attendanceのidに紐づくCorrectionモデルのレコードを作成、既に作成していればattendanceのidを元に引っ張る
+        #worked_on, started_at(started_at_before_change), finished_at(finished_at_before_change),
+        #applied_attendances_change, approval_date(currentで良い？)の情報を上書き
+        #保存
       end
     end
     flash[:success] = "勤怠情報の変更を申請しました。"

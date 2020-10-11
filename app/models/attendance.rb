@@ -1,6 +1,6 @@
 class Attendance < ApplicationRecord
   belongs_to :user
-  has_many :corrections, dependent: :destroy
+  has_one :correction, dependent: :destroy
   
   #余裕があればバリデーションをもっと見やすく！
   validates :worked_on, presence: true
