@@ -37,7 +37,7 @@ class Attendance < ApplicationRecord
   #出勤日当日でない日は、出勤時間のみの更新は無効
   def started_at_is_invalid_exist_a_finished_at
     unless worked_on == Date.current
-      errors.add(:finished_at, " が必要です") if started_at.present? && finished_at.blank?
+      errors.add(:finished_at, "が必要です") if started_at.present? && finished_at.blank?
     end
   end
   

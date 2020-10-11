@@ -12,13 +12,13 @@ class Correction < ApplicationRecord
 
   def before_leaving_time_earlier_than_before_attendance_time_is_invalid
     if before_leaving_time.present? && before_attendance_time.present?
-      errors.add(:before_attendance_time, より早い時間は無効です) if before_leaving_time <= before_attendance_time
+      errors.add(:before_attendance_time, "より早い時間は無効です") if before_leaving_time <= before_attendance_time
     end
   end
 
   def leaving_time_earlier_than_attendance_time_is_invalid
     if leaving_time.present? && attendance_time.present?
-      errors.add(:attendance_time, より早い時間は無効です) if leaving_time <= attendance_time
+      errors.add(:attendance_time, "より早い時間は無効です") if leaving_time <= attendance_time
     end
   end
 end
