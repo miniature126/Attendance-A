@@ -40,3 +40,11 @@ ja:
           approval_superior_reflection: 変更
           approval_superior_confirmation: 指示者確認㊞
           applied_month: 勤怠申請月
+        correction:
+          date: 日付
+          before_attendance_time: 変更前出勤時間
+          before_leaving_time: 変更前退勤時間
+          attendance_time: 変更後出勤時間
+          leaving_time: 変更後退勤時間
+          instructor: 指示者
+          approval_date: 承認日
