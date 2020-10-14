@@ -51,7 +51,7 @@ class AttendancesController < ApplicationController
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
           attendance.update_attributes!(item) #入力データ上書き
-          if attendance.correction.present? #create後初回の更新
+          if attendance.correction.present? #出勤ボタンでレコード作成(date, attendance_time)、退勤ボタンで更新(leaving_time)後、初回の更新
             @correction = Correction.includes(:attendance).find_by(id: attendance.id) #既に存在するcorrectionモデルのレコードを引っ張る
             #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
             unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?

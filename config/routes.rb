@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  get 'corrections/attendance_log'
+
   root    'static_pages#top'
   get     '/signup', to: 'users#new'
   
