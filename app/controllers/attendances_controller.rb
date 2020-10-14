@@ -13,12 +13,17 @@ class AttendancesController < ApplicationController
     #出勤時間が未登録であることを判定
     if @attendance.started_at.nil?
       if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
+        #勤怠ログ表示用のレコードを作成(日付と出勤時間のみ)
+        @attendance.create_correction(date: @attendance.worked_on, attendance_time: @attendance.started_at)
         flash[:info] = "おはようございます！"
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
     elsif @attendance.finished_at.nil?
       if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
+        #勤怠ログ表示用のレコードを更新(退勤時間)
+        @attendance.correction.update_attributes(leaving_time: @attendance.finished_at)
+        debugger
         flash[:info] = "お疲れ様でした。"
       else
         flash[:danger] = UPDATE_ERROR_MSG
@@ -46,11 +51,22 @@ class AttendancesController < ApplicationController
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
           attendance.save
           attendance.update_attributes!(item) #入力データ上書き
-          if attendance.correction.present? #変更2回目以降
-            correction = attendance.correction #既に存在するcorrectionモデルのレコードを引っ張る
+          if attendance.correction.present? #create後初回の更新
+            @correction = Correction.includes(:attendance).find_by(id: attendance.id) #既に存在するcorrectionモデルのレコードを引っ張る
+            #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
+            unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?
+              @correction.before_attendance_time = @correction.attendance_time
+              @correction.before_leaving_time = @correction.leaving_time
+              @correction.save
+            end
+            #2回目以降の更新時、before_attendance_timeとbefore_leaving_timeは更新対象に含まない
+            @correction.update_attributes!(attendance_time: attendance.started_at,
+                                           leaving_time: attendance.finished_at,
+                                           instructor: attendance.applied_attendances_change,
+                                           approval_date: Date.current)
           else
-            #勤怠変更初回(attendanceのidに紐づくCorrectionモデルのレコードを作成)
-            @user.attendance.correction.create!(date: attendance.worked_on,
+            #出勤ボタン・退勤ボタンで勤怠が入力されていなかった場合、attendanceのidに紐づくCorrectionモデルのレコードを作成
+            attendance.create_correction!(date: attendance.worked_on,
                                           attendance_time: attendance.started_at,
                                           leaving_time: attendance.finished_at,
                                           instructor: attendance.applied_attendances_change,

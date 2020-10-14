@@ -2,8 +2,8 @@ class Correction < ApplicationRecord
   belongs_to :attendance
 
   validates :date, presence: true
-  validates :instructor, presence: true
-  validates :approval_date, presence: true
+  validates :instructor, presence: true, on: :update_one_month
+  validates :approval_date, presence: true, on: :update_one_month
 
   #変更前出勤時間より早い変更前退勤時間は無効
   validate :before_leaving_time_earlier_than_before_attendance_time_is_invalid

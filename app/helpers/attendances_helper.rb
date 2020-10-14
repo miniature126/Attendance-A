@@ -36,7 +36,7 @@ module AttendancesHelper
   
   #勤怠変更申請中のレコードが存在する場合はtrue、存在しない場合はfalseを返す
   def change_attendance_application_info(user, superior)
-    if user.attendances.where(applied_attendances_change: superior.id).(change_attendances_confirmation: 2).any?
+    if user.attendances.where(applied_attendances_change: superior.id).where(change_attendances_confirmation: 2).any?
       true
     else
       false

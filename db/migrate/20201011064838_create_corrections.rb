@@ -8,7 +8,7 @@ class CreateCorrections < ActiveRecord::Migration[5.1]
       t.datetime :leaving_time
       t.integer :instructor
       t.date :approval_date
-      t.references :attendance, foreign_key: true
+      t.belongs_to :attendance, index: { unique: true }, foreign_key: true
 
       t.timestamps
     end
