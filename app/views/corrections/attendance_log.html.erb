@@ -15,15 +15,18 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+      <% @attendances.each do |attendance| %>
+        <tr>
+          <td><%= attendance.correction.date %></td>
+          <td><%= attendance.correction.before_attendance_time %></td>
+          <td><%= attendance.correction.before_leaving_time %></td>
+          <td><%= attendance.correction.attendance_time %></td>
+          <td><%= attendance.correction.leaving_time %></td>
+          <td><%= attendance.correction.instructor %></td>
+          <td><%= attendance.correction.approval_date %></td>
+          <%# instructorのidから上長の名前を取得して返すヘルパーが必要 %>
+        </tr>
+      <% end %>
     </tbody>
   </table>
   
