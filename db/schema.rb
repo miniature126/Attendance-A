@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201011064838) do
+ActiveRecord::Schema.define(version: 20201016140048) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20201011064838) do
     t.boolean "change_attendances_reflection"
     t.datetime "started_at_before_change"
     t.datetime "finished_at_before_change"
+    t.boolean "log_flag"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 

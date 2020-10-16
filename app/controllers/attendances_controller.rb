@@ -89,12 +89,14 @@ class AttendancesController < ApplicationController
                                           instructor: attendance.applied_attendances_change,
                                           approval_date: Date.current)
           else
-            #勤怠変更申請が承認された場合、attendanceのidに紐づくCorrectionモデルのレコードを作成
+            #勤怠変更申請が承認された場合、attendanceのidに紐づくCorrectionモデルのレコードを作成、ログのレコードができたらフラグを立てる
             attendance.create_correction!(date: attendance.worked_on,
                                           attendance_time: attendance.started_at,
                                           leaving_time: attendance.finished_at,
                                           instructor: attendance.applied_attendances_change,
                                           approval_date: Date.current)
+            attendance.log_flag = true
+            attendance.save
           end
         end
       end     

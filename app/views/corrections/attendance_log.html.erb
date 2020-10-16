@@ -2,7 +2,7 @@
 <div>
   <h1>勤怠ログ</h1>
   
-  <table class="table table-bordered table-striped">
+  <table class="table table-bordered table-striped attendance-log__table">
     <thead>
       <tr>
         <th>日付</th>
@@ -18,13 +18,12 @@
       <% @attendances.each do |attendance| %>
         <tr>
           <td><%= attendance.correction.date %></td>
-          <td><%= attendance.correction.before_attendance_time %></td>
-          <td><%= attendance.correction.before_leaving_time %></td>
-          <td><%= attendance.correction.attendance_time %></td>
-          <td><%= attendance.correction.leaving_time %></td>
-          <td><%= attendance.correction.instructor %></td>
+          <td><%= l(attendance.correction.before_attendance_time, format: :time) if attendance.correction.before_attendance_time.present? %></td>
+          <td><%= l(attendance.correction.before_leaving_time, format: :time) if attendance.correction.before_leaving_time.present? %></td>
+          <td><%= l(attendance.correction.attendance_time, format: :time) if attendance.correction.attendance_time.present? %></td>
+          <td><%= l(attendance.correction.leaving_time, format: :time) if attendance.correction.leaving_time.present? %></td>
+          <td><%= superior_name(attendance.correction.instructor.to_i) %></td>
           <td><%= attendance.correction.approval_date %></td>
-          <%# instructorのidから上長の名前を取得して返すヘルパーが必要 %>
         </tr>
       <% end %>
     </tbody>
