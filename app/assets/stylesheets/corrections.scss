@@ -1,5 +1,5 @@
 /* attendance log */
-.modal-body .attendance-log__table > tbody > .tr > .td {
-  vertical-align: middle;
+.attendance-log__table > thead > tr > th,
+.attendance-log__table > tbody > tr > td, {
   text-align: center;
 }
