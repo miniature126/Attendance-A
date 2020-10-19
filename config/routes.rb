@@ -23,7 +23,7 @@ Rails.application.routes.draw do
       patch 'attendances/update_overwork_request'
       get 'attendances/edit_overwork_notice'
       patch 'update_overwork_notice', to: "attendances#update_overwork_notice"
-      get 'attendance_log', to: "corrections#attendance_log"
+      get 'attendances/attendance_log', to: "corrections#attendance_log"
       
     end
     resources :attendances, only: :update

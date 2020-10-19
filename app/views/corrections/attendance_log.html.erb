@@ -2,6 +2,12 @@
 <div>
   <h1>勤怠ログ</h1>
   
+  <%= form_with(url: attendances_attendance_log_user_path(@user), class: "search_form", method: :get, local: true) do |f| %>
+    <%= f.submit "検索", class: "btn btn-primary" %><br>
+    <%= f.date_select :year, { discard_month: true, discard_day: true }, class: "form-control" %><br>
+    <%= f.date_select :month, { discard_year: true, discard_day: true }, class: "form-control" %>
+  <% end %>
+
   <table class="table table-bordered table-striped attendance-log__table">
     <thead>
       <tr>
