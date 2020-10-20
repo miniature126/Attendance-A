@@ -1,12 +1,14 @@
 <% provide(:title, "Attendance log") %>
-<div>
+<div class="attendance-log">
   <h1>勤怠ログ</h1>
   
-  <%= form_with(url: attendances_attendance_log_user_path(@user), class: "search_form", method: :get, local: true) do |f| %>
-    <%= f.submit "検索", class: "btn btn-primary" %><br>
-    <%= f.date_select :year, { discard_month: true, discard_day: true }, class: "form-control" %><br>
-    <%= f.date_select :month, { discard_year: true, discard_day: true }, class: "form-control" %>
-  <% end %>
+  <div class="col-md-2 narrowing-down__form">
+    <%= form_with(url: attendances_attendance_log_user_path(@user), method: :get, local: true) do |f| %>
+      <%= f.submit "検索", class: "btn btn-primary" %><br>
+      <%= f.date_select :year, { discard_month: true, discard_day: true, prompt: "年" }, class: "form-control" %><br>
+      <%= f.date_select :month, { discard_year: true, discard_day: true, prompt: "月" }, class: "form-control month__select" %>
+    <% end %>
+  </div>
 
   <table class="table table-bordered table-striped attendance-log__table">
     <thead>
