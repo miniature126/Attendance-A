@@ -1,14 +1,17 @@
 /* attendance log */
-.attendance-log__table > thead > tr > th,
-.attendance-log__table > tbody > tr > td {
+.table__th-td--center > thead > tr > th,
+.table__th-td--center > tbody > tr > td {
   text-align: center;
 }
 
-.attendance_log > .narrowing-down__form {
-  padding-left: -15px;
+.form__select-box--position_relative {
+  width: 10%;
+  position: relative;
+  min-height: 1px;
+  padding-right: 15px;
 }
 
-.month__select {
+.form__select-box--margin {
   margin-top: -20px;
   margin-bottom: 5px;
 }
