@@ -2,8 +2,9 @@
 
 <h1>勤怠ログ</h1>
 <div class="form__select-box--position_relative">
+  <%= button_to "キャンセル", attendances_attendance_log_user_path(@user), method: :get, class: "btn btn-secondary" %>
   <%= form_with(scope: :search, url: attendances_attendance_log_user_path(@user), method: :get, local: true) do |f| %>
-    <%= f.submit "検索", class: "btn btn-primary" %><br>
+    <%= f.submit "検索", class: "btn btn-primary" %>
     <%= f.date_select :date, { discard_day: true, prompt: "--" }, class: "form-control" %><br>
   <% end %>
 </div>
