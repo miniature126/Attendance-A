@@ -1,28 +1,27 @@
 <% provide(:title, "Attendance log") %>
-<div>
-  <h1>勤怠ログ</h1>
-  
-  <div class="form__select-box--position_relative">
-    <%= form_with(url: attendances_attendance_log_user_path(@user), method: :get, local: true) do |f| %>
-      <%= f.submit "検索", class: "btn btn-primary" %><br>
-      <%= f.date_select :year, { discard_month: true, discard_day: true, prompt: "年" }, class: "form-control" %><br>
-      <%= f.date_select :month, { discard_year: true, discard_day: true, prompt: "月" }, class: "form-control form__select-box--margin" %>
-    <% end %>
-  </div>
 
-  <table class="table table-bordered table-striped table__th-td--center">
-    <thead>
-      <tr>
-        <th>日付</th>
-        <th>変更前出社時間</th>
-        <th>変更前退社時間</th>
-        <th>変更後出社時間</th>
-        <th>変更後退社時間</th>
-        <th>指示者</th>
-        <th>承認日</th>
-      </tr>
-    </thead>
-    <tbody>
+<h1>勤怠ログ</h1>
+<div class="form__select-box--position_relative">
+  <%= form_with(scope: :search, url: attendances_attendance_log_user_path(@user), method: :get, local: true) do |f| %>
+    <%= f.submit "検索", class: "btn btn-primary" %><br>
+    <%= f.date_select :date, { discard_day: true, prompt: "--" }, class: "form-control" %><br>
+  <% end %>
+</div>
+
+<table class="table table-bordered table-striped table__th-td--center">
+  <thead>
+    <tr>
+      <th>日付</th>
+      <th>変更前出社時間</th>
+      <th>変更前退社時間</th>
+      <th>変更後出社時間</th>
+      <th>変更後退社時間</th>
+      <th>指示者</th>
+      <th>承認日</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @attendances.present? %>
       <% @attendances.each do |attendance| %>
         <tr>
           <td><%= attendance.correction.date %></td>
@@ -34,8 +33,6 @@
           <td><%= attendance.correction.approval_date %></td>
         </tr>
       <% end %>
-    </tbody>
-  </table>
-  
-</div>
-
+    <% end %>
+  </tbody>
+</table>

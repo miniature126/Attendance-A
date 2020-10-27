@@ -1,4 +1,9 @@
 class Correction < ApplicationRecord
+
+  include ActiveRecord::AttributeAssignment
+
+  attribute :date
+
   belongs_to :attendance
 
   validates :date, presence: true
