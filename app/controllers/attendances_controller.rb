@@ -66,9 +66,9 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_params.each do |id, item|
         attendance = Attendance.find(id)
-        #「変更」にチェックが入っている時は更新、更新後は変更カラムを空に
+        #「変更」にチェックが入っている時は更新、更新後は変更カラムをfalseに
         attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
-        attendance.change_attendances_reflection = nil
+        attendance.change_attendances_reflection = false
         attendance.save
 
         if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
@@ -140,7 +140,7 @@ class AttendancesController < ApplicationController
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
         attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-        attendance.overwork_reflection = nil
+        attendance.overwork_reflection = false
         attendance.save
       end
     end
