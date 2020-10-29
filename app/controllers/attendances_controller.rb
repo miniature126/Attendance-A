@@ -33,7 +33,7 @@ class AttendancesController < ApplicationController
   
   def update_one_month #勤怠変更の申請
     ActiveRecord::Base.transaction do #モデル名.transaction do。複数モデルをいじりたい場合はActiveRecord::Base。
-      attendances_params.each do |id, item|
+      attendances_request_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
@@ -64,7 +64,7 @@ class AttendancesController < ApplicationController
   def update_change_notice
     @superior = User.find(params[:id]) #送信先に@superiorのidが含まれるため必要
     ActiveRecord::Base.transaction do #トランザクションを開始
-      attendances_params.each do |id, item|
+      attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
         #「変更」にチェックが入っている時は更新、更新後は変更カラムをfalseに
         attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
@@ -117,7 +117,7 @@ class AttendancesController < ApplicationController
     @user.save
     params[:user][:attendances][:overwork_confirmation] = 2 #残業申請のステータスを「申請中」
     if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
-      if @attendance.update_attributes(overwork_params)
+      if @attendance.update_attributes(overwork_request_params)
         flash[:success] = "残業を申請しました。"
       else
         flash[:danger] = "申請をキャンセルしました。"
@@ -134,14 +134,25 @@ class AttendancesController < ApplicationController
   def update_overwork_notice
     @superior = User.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを開始
-      overwork_params.each do |id, item| #update_one_monthアクション参考
+      overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
         user = User.find_by(id: attendance.user_id)
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
-        attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-        attendance.overwork_reflection = false
-        attendance.save
+        if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
+          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1
+            attendance.finish_overwork = nil
+            attendance.next_day = nil
+            attendance.work_contents = nil
+            attendance.applied_overwork = nil
+            attendance.overwork_confirmation = nil
+            attendance.save
+          else
+            attendance.update_attributes!(item)
+          end
+          attendance.overwork_reflection = false
+          attendance.save
+        end
       end
     end
     flash[:success] = "情報を更新しました。"
@@ -160,13 +171,23 @@ class AttendancesController < ApplicationController
     end
     
     #一般→上長(上長→上長)と、#上長→一般(上長→上長)でストロングパラメータを分ける
-    #１ヶ月分の勤怠申請情報を扱う
-    def attendances_params
+    #１ヶ月分の勤怠申請情報(申請者→上長)を扱う
+    def attendances_request_params
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :change_attendances_confirmation, :change_attendances_reflection])[:attendances]
+    end
+
+    #1ヶ月分の勤怠申請情報(上長→申請者)を扱う
+    def attendances_notice_params
       params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :change_attendances_confirmation, :change_attendances_reflection])[:attendances]
     end
     
-    #残業申請情報を扱う
-    def overwork_params
-      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :applied_overwork, :overwork_confirmation, :overwork_reflection])[:attendances]
+    #残業申請情報(申請者→上長)を扱う
+    def overwork_request_params
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :applied_overwork, :overwork_confirmation])[:attendances]
+    end
+
+    #残業申請情報(上長→申請者)を扱う
+    def overwork_notice_params
+      params.require(:user).permit(attendances: [:finish_overwork, :next_day, :work_contents, :applied_overwork, :overwork_confirmation, :overwork_reflection])[:attendances]      
     end
 end
