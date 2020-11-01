@@ -16,12 +16,10 @@ gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
 gem 'rounding'
 
-gem 'pry-rails' #コンソール出力整形
-# gem 'awesome_rails_console' エラーが出る。なぜかは分からない。
-
 group :development, :test do
   gem 'sqlite3'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'awesome_print' #コンソール出力整形
 end
 
 group :development do

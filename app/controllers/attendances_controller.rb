@@ -4,6 +4,8 @@ class AttendancesController < ApplicationController
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
+
+  include ActiveModel::Dirty
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -70,7 +72,6 @@ class AttendancesController < ApplicationController
         attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
         attendance.change_attendances_reflection = false
         attendance.save
-
         if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
           if attendance.correction.present?
             @correction = attendance.correction
@@ -107,7 +108,7 @@ class AttendancesController < ApplicationController
   
   # URLのidにはattendanceのidが入っている
   def edit_overwork_request
-    @attendance = Attendance.find(params[:id]) #paramsから取得したユーザー
+    @attendance = Attendance.find(params[:id])
     @superior = User.where(superior: true).where.not(id: @attendance.user_id)
   end
 
@@ -137,18 +138,30 @@ class AttendancesController < ApplicationController
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
         user = User.find_by(id: attendance.user_id)
+        debugger
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
+        
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1
-            attendance.finish_overwork = nil
-            attendance.next_day = nil
-            attendance.work_contents = nil
-            attendance.applied_overwork = nil
-            attendance.overwork_confirmation = nil
-            attendance.save
+          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
+            if attendance.overwork_flg #2回目以降の残業申請の場合、1つ前の値に戻す
+              attendance.finish_overwork = attendance.finish_overwork
+              attendance.next_day = attendance.next_day
+              attendance.work_contents = attendance.work_contents
+              attendance.applied_overwork = attendance.applied_overwork
+              attendance.overwork_confirmation = attendance.overwork_confirmation
+              attendance.save
+            else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする
+              attendance.finish_overwork = nil
+              attendance.next_day = nil
+              attendance.work_contents = nil
+              attendance.applied_overwork = nil
+              attendance.overwork_confirmation = nil
+              attendance.save
+            end
           else
-            attendance.update_attributes!(item)
+            attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
+            attendance.overwork_flg = true
           end
           attendance.overwork_reflection = false
           attendance.save
