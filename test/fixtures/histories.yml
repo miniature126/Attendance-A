@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  b_finish_overwork: 2020-11-03 17:01:56
+  b_next_day: false
+  b_work_contents: MyString
+  b_applied_overwork: 1
+  b_overwork_confirmation: 1
+  attendance: one
+
+two:
+  b_finish_overwork: 2020-11-03 17:01:56
+  b_next_day: false
+  b_work_contents: MyString
+  b_applied_overwork: 1
+  b_overwork_confirmation: 1
+  attendance: two

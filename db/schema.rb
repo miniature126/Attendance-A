@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201103073122) do
+ActiveRecord::Schema.define(version: 20201103080155) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -61,19 +61,23 @@ ActiveRecord::Schema.define(version: 20201103073122) do
     t.index ["attendance_id"], name: "index_corrections_on_attendance_id", unique: true
   end
 
-  create_table "overwork_histories", force: :cascade do |t|
+  create_table "histories", force: :cascade do |t|
     t.datetime "b_finish_overwork"
     t.boolean "b_next_day"
     t.string "b_work_contents"
+    t.integer "b_applied_overwork"
     t.integer "b_overwork_confirmation"
+    t.integer "attendance_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["attendance_id"], name: "index_histories_on_attendance_id"
   end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email"
     t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin", default: false
