@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201103080155) do
+ActiveRecord::Schema.define(version: 20201104122632) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -70,6 +70,8 @@ ActiveRecord::Schema.define(version: 20201103080155) do
     t.integer "attendance_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "b_started_at"
+    t.datetime "b_finished_at"
     t.index ["attendance_id"], name: "index_histories_on_attendance_id"
   end
 
