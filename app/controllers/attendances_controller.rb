@@ -4,6 +4,7 @@ class AttendancesController < ApplicationController
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
+  before_action :set_history, only: :update_overwork_request
 
   include ActiveModel::Dirty
   
@@ -115,9 +116,18 @@ class AttendancesController < ApplicationController
   def update_overwork_request
     #指定勤務終了時間の日付を残業申請した日の日付に合わせ、保存
     @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
-    @user.save
+    @user.save    
     params[:user][:attendances][:overwork_confirmation] = 2 #残業申請のステータスを「申請中」
     if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
+      #2回目以降の残業申請の場合、値を@historyにコピーする
+      if @attendance.overwork_flag == true
+        @history.b_finish_overwork = @attendance.finish_overwork
+        @history.b_next_day = @attendance.next_day
+        @history.b_work_contents = @attendance.work_contents
+        @history.b_applied_overwork = @attendance.applied_overwork
+        @history.b_overwork_confirmation = @attendance.overwork_confirmation
+        @history.save
+      end
       if @attendance.update_attributes(overwork_request_params)
         flash[:success] = "残業を申請しました。"
       else
@@ -137,19 +147,23 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
+        if History.find_by(attendance_id: attendance.id).present?
+          @history = History.find_by(attendance_id: attendance.id)
+        else
+          @history = History.create(attendance_id: attendance.id)
+        end
         user = User.find_by(id: attendance.user_id)
-        debugger
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
         
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
           if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
-            if attendance.overwork_flg #2回目以降の残業申請の場合、1つ前の値に戻す
-              attendance.finish_overwork = attendance.finish_overwork
-              attendance.next_day = attendance.next_day
-              attendance.work_contents = attendance.work_contents
-              attendance.applied_overwork = attendance.applied_overwork
-              attendance.overwork_confirmation = attendance.overwork_confirmation
+            if attendance.overwork_flag #2回目以降の残業申請の場合、1つ前の値に戻す
+              attendance.finish_overwork = @history.b_finish_overwork
+              attendance.next_day = @history.b_next_day
+              attendance.work_contents = @history.b_work_contents
+              attendance.applied_overwork = @history.b_applied_overwork
+              attendance.overwork_confirmation = @history.b_overwork_confirmation
               attendance.save
             else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする
               attendance.finish_overwork = nil
@@ -161,7 +175,7 @@ class AttendancesController < ApplicationController
             end
           else
             attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
-            attendance.overwork_flg = true
+            attendance.overwork_flag = true
           end
           attendance.overwork_reflection = false
           attendance.save
@@ -181,6 +195,15 @@ class AttendancesController < ApplicationController
     def set_attendance_user
       @attendance = Attendance.find(params[:id])
       @user = User.find(@attendance.user_id)
+    end
+
+    #attendanceと同じattendance_idを持つHistoryレコードを探す、存在しなければ作成する。
+    def set_history
+      if History.find_by(attendance_id: @attendance.id).present?
+        @history = History.find_by(attendance_id: @attendance.id)
+      else
+        @history = History.create(attendance_id: @attendance.id)
+      end
     end
     
     #一般→上長(上長→上長)と、#上長→一般(上長→上長)でストロングパラメータを分ける

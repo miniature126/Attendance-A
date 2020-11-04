@@ -1,7 +1,7 @@
 class Attendance < ApplicationRecord
   belongs_to :user
   has_one :correction, dependent: :destroy
-  has_one :history, dependent: :destory
+  has_one :history, dependent: :destroy
   
   #余裕があればバリデーションをもっと見やすく！
   validates :worked_on, presence: true

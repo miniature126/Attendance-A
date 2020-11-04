@@ -43,7 +43,7 @@ ActiveRecord::Schema.define(version: 20201103080155) do
     t.datetime "started_at_before_change"
     t.datetime "finished_at_before_change"
     t.boolean "log_flag"
-    t.boolean "overwork_flg", default: false
+    t.boolean "overwork_flag", default: false
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -82,10 +82,10 @@ ActiveRecord::Schema.define(version: 20201103080155) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-11-03 08:00:00"
+    t.datetime "basic_time", default: "2020-11-04 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "desig_start_worktime", default: "2020-11-03 08:00:00"
-    t.datetime "desig_finish_worktime", default: "2020-11-03 17:00:00"
+    t.datetime "desig_start_worktime", default: "2020-11-04 08:00:00"
+    t.datetime "desig_finish_worktime", default: "2020-11-04 17:00:00"
     t.integer "employee_number"
     t.integer "card_id"
     t.index ["email"], name: "index_users_on_email", unique: true
