@@ -4,7 +4,7 @@ class AttendancesController < ApplicationController
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
-  before_action :set_history, only: [:update_overwork_request, :update_one_month]
+  before_action :set_history, only: [:update_overwork_request]
 
   include ActiveModel::Dirty
   
@@ -41,12 +41,12 @@ class AttendancesController < ApplicationController
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。(合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる)
-          if History.find_by(attendance_id: attendance.id).present?　#attendanceに紐付くhistoryを取得、無ければ生成
-            @history = History.find_by(attendance_id: attendance.id)
-          else
-            @history = History.create(attendance_id: attendance.id)
-          end
           if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
+            if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
+              @history = History.find_by(attendance_id: attendance.id)
+            else
+              @history = History.create(attendance_id: attendance.id)
+            end
             @history.b_started_at = attendance.started_at #出勤時間をhistoryテーブルの変更前出勤時間カラムに移動
             @history.b_finished_at = attendance.finished_at #退勤時間をhistoryテーブルの変更前退勤時間カラムに移動
             @history.save
