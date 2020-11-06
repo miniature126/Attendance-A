@@ -55,10 +55,17 @@
                             <%= $days_of_the_week[day.worked_on.wday] %>
                           </td>
                         <% end %>
-                        <td><%= l(day.history.b_started_at format: :hour) if day.history.b_started_at.present? %></td>
-                        <td><%= l(day.history.b_started_at.floor_to(15.minute), format: :minute)if day.history.b_started_at.present? %> </td>
-                        <td><%= l(day.history.b_finished_at, format: :hour) if day.history.b_finished_at.present? %></td>
-                        <td><%= l(day.history.b_finished_at.floor_to(15.minute), format: :minute) if day.history.b_finidhed_at.present? %></td>
+                        <% if day.history.present? %> <%# 履歴用のレコードが存在する場合 %>
+                          <td><%= l(day.history.b_started_at, format: :hour) %></td>
+                          <td><%= l(day.history.b_started_at.floor_to(15.minute), format: :minute) %> </td>
+                          <td><%= l(day.history.b_finished_at, format: :hour) %></td>
+                          <td><%= l(day.history.b_finished_at.floor_to(15.minute), format: :minute) %></td>
+                        <% else%>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        <% end %>
                         <td><%= l(day.started_at, format: :hour) %></td>
                         <td><%= l(day.started_at.floor_to(15.minute), format: :minute) %></td>
                         <td><%= l(day.finished_at, format: :hour) %></td>

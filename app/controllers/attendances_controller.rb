@@ -41,14 +41,18 @@ class AttendancesController < ApplicationController
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。(合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる)
-          if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時
+          if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時(2回目以降の申請)
             if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
               @history = History.find_by(attendance_id: attendance.id)
             else
               @history = History.create(attendance_id: attendance.id)
             end
-            @history.b_started_at = attendance.started_at #出勤時間をhistoryテーブルの変更前出勤時間カラムに移動
-            @history.b_finished_at = attendance.finished_at #退勤時間をhistoryテーブルの変更前退勤時間カラムに移動
+            #勤怠変更申請で入力した値をhistoryレコードにコピー
+            @history.b_started_at = attendance.started_at
+            @history.b_finished_at = attendance.finished_at
+            @history.b_next_day = attendance.next_day
+            @history.b_note = attendance.note
+            @history.b_applied_attendances_change = attendance.applied_attendances_change
             @history.save
           end
           attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
@@ -74,33 +78,57 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
+        if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得(レコードが存在する＝2回目以降の申請)
+          @history = History.find_by(attendance_id: attendance.id)
+        end
         #「変更」にチェックが入っている時は更新、更新後は変更カラムをfalseに
-        attendance.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
-        attendance.change_attendances_reflection = false
-        attendance.save
-        if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
-          if attendance.correction.present?
-            @correction = attendance.correction
-            #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
-            unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?
-              @correction.before_attendance_time = @correction.attendance_time
-              @correction.before_leaving_time = @correction.leaving_time
-              @correction.save
+        if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
+          if params[:user][:attendances][id][:change_attendances_confirmation].to_i == 1 #ステータス「なし」が選択された場合、カラムを空に
+            if attendance.one_month_flag #2回目以降の申請の場合
+              attendance.started_at = @history.b_started_at
+              attendance.finished_at = @history.b_finished_at
+              attendance.next_day = @history.b_next_day
+              attendance.note = @history.b_note
+              attendance.applied_attendances_change = @history.b_applied_attendances_change
+              attendance.save
+            else #初回の申請の場合
+              attendance.started_at = nil
+              attendance.finished_at = nil
+              attendance.next_day = nil
+              attendance.note = nil
+              attendance.applied_attendances_change = nil
+              attendance.save
             end
-            #2回目以降の更新時、before_attendance_timeとbefore_leaving_timeは更新対象に含まない
-            @correction.update_attributes!(attendance_time: attendance.started_at,
-                                          leaving_time: attendance.finished_at,
-                                          instructor: attendance.applied_attendances_change,
-                                          approval_date: Date.current)
           else
-            #勤怠変更申請が承認された場合、attendanceのidに紐づくCorrectionモデルのレコードを作成、ログのレコードができたらフラグを立てる
-            attendance.create_correction!(date: attendance.worked_on,
-                                          attendance_time: attendance.started_at,
-                                          leaving_time: attendance.finished_at,
-                                          instructor: attendance.applied_attendances_change,
-                                          approval_date: Date.current)
-            attendance.log_flag = true
+            attendance.update_attributes!(item) 
+            attendance.one_month_flag = true
+            attendance.change_attendances_reflection = false
             attendance.save
+            if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
+              if attendance.correction.present?
+                @correction = attendance.correction
+                #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
+                unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?
+                  @correction.before_attendance_time = @correction.attendance_time
+                  @correction.before_leaving_time = @correction.leaving_time
+                  @correction.save
+                end
+                #2回目以降の更新時、before_attendance_timeとbefore_leaving_timeは更新対象に含まない
+                @correction.update_attributes!(attendance_time: attendance.started_at,
+                                              leaving_time: attendance.finished_at,
+                                              instructor: attendance.applied_attendances_change,
+                                              approval_date: Date.current)
+              else
+                #勤怠変更申請が承認された場合、attendanceのidに紐づくCorrectionモデルのレコードを作成、ログのレコードができたらフラグを立てる
+                attendance.create_correction!(date: attendance.worked_on,
+                                              attendance_time: attendance.started_at,
+                                              leaving_time: attendance.finished_at,
+                                              instructor: attendance.applied_attendances_change,
+                                              approval_date: Date.current)
+                attendance.log_flag = true #ログ持ってます
+                attendance.save
+              end
+            end
           end
         end
       end     
