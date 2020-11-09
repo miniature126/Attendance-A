@@ -48,16 +48,15 @@ class AttendancesController < ApplicationController
               @history = History.create(attendance_id: attendance.id)
             end
             #勤怠変更申請で入力した値をhistoryレコードにコピー
-            @history.b_started_at = attendance.started_at
-            @history.b_finished_at = attendance.finished_at
-            @history.b_next_day = attendance.next_day
-            @history.b_note = attendance.note
-            @history.b_applied_attendances_change = attendance.applied_attendances_change
-            @history.save
+            @history.update_attributes!(b_started_at: attendance.started_at,
+                                        b_finished_at: attendance.finished_at,
+                                        b_next_day: attendance.next_day,
+                                        b_note: attendance.note,
+                                        b_applied_attendances_change: attendance.applied_attendances_change,
+                                        b_change_attendances_confirmation: attendance.change_attendances_confirmation)
           end
-          attendance.change_attendances_confirmation = 2 #ステータスを申請中にする
-          attendance.save
           attendance.update_attributes!(item) #入力データ上書き
+          attendance.update_attributes!(change_attendances_confirmation: 2) #ステータスを申請中にする
         end
       end
     end
@@ -85,33 +84,30 @@ class AttendancesController < ApplicationController
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
           if params[:user][:attendances][id][:change_attendances_confirmation].to_i == 1 #ステータス「なし」が選択された場合、カラムを空に
             if attendance.one_month_flag #2回目以降の申請の場合
-              attendance.started_at = @history.b_started_at
-              attendance.finished_at = @history.b_finished_at
-              attendance.next_day = @history.b_next_day
-              attendance.note = @history.b_note
-              attendance.applied_attendances_change = @history.b_applied_attendances_change
-              attendance.save
+              attendance.update_attributes!(started_at: @history.b_started_at,
+                                            finished_at: @history.b_finished_at,
+                                            next_day: @history.b_next_day,
+                                            note: @history.b_note,
+                                            applied_attendances_change: @history.b_applied_attendances_change,
+                                            change_attendances_confirmation: @history.b_change_attendances_confirmation)
             else #初回の申請の場合
-              attendance.started_at = nil
-              attendance.finished_at = nil
-              attendance.next_day = nil
-              attendance.note = nil
-              attendance.applied_attendances_change = nil
-              attendance.save
+              attendance.update_attributes!(started_at: nil,
+                                            finished_at: nil,
+                                            next_day: nil,
+                                            note: nil,
+                                            applied_attendances_change: nil,
+                                            change_attendances_confirmation: nil)
             end
           else
             attendance.update_attributes!(item) 
-            attendance.one_month_flag = true
-            attendance.change_attendances_reflection = false
-            attendance.save
+            attendance.update_attributes!(one_month_flag: true, change_attendances_reflection: false)
             if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
               if attendance.correction.present?
                 @correction = attendance.correction
                 #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
                 unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?
-                  @correction.before_attendance_time = @correction.attendance_time
-                  @correction.before_leaving_time = @correction.leaving_time
-                  @correction.save
+                  @correction.update_attributes!(before_attendance_time: @correction.attendance_time,
+                                                before_leaving_time: @correction.leaving_time)
                 end
                 #2回目以降の更新時、before_attendance_timeとbefore_leaving_timeは更新対象に含まない
                 @correction.update_attributes!(attendance_time: attendance.started_at,
@@ -125,8 +121,9 @@ class AttendancesController < ApplicationController
                                               leaving_time: attendance.finished_at,
                                               instructor: attendance.applied_attendances_change,
                                               approval_date: Date.current)
-                attendance.log_flag = true #ログ持ってます
-                attendance.save
+                attendance.update_attributes!(log_flag: true) #ログ持ってます
+                # attendance.log_flag = true #ログ持ってます
+                # attendance.save
               end
             end
           end
@@ -154,12 +151,11 @@ class AttendancesController < ApplicationController
     if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
       #2回目以降の残業申請の場合、値を@historyにコピーする
       if @attendance.overwork_flag == true
-        @history.b_finish_overwork = @attendance.finish_overwork
-        @history.b_next_day = @attendance.next_day
-        @history.b_work_contents = @attendance.work_contents
-        @history.b_applied_overwork = @attendance.applied_overwork
-        @history.b_overwork_confirmation = @attendance.overwork_confirmation
-        @history.save
+        @history.update_attributes(b_finish_overwork: @attendance.finish_overwork,
+                                    b_next_day: @attendance.next_day,
+                                    b_work_contents: @attendance.work_contents,
+                                    b_applied_overwork: @attendance.applied_overwork,
+                                    b_overwork_confirmation: @attendance.overwork_confirmation)
       end
       if @attendance.update_attributes(overwork_request_params)
         flash[:success] = "残業を申請しました。"
@@ -192,26 +188,23 @@ class AttendancesController < ApplicationController
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
           if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
             if attendance.overwork_flag #2回目以降の残業申請の場合、1つ前の値に戻す
-              attendance.finish_overwork = @history.b_finish_overwork
-              attendance.next_day = @history.b_next_day
-              attendance.work_contents = @history.b_work_contents
-              attendance.applied_overwork = @history.b_applied_overwork
-              attendance.overwork_confirmation = @history.b_overwork_confirmation
-              attendance.save
+              attendance.update_attributes!(finish_overwork: @history.b_finish_overwork,
+                                            next_day: @history.b_next_day,
+                                            work_contents: @history.b_work_contents,
+                                            applied_overwork: @history.b_applied_overwork,
+                                            overwork_confirmation: @history.b_overwork_confirmation)
             else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする
-              attendance.finish_overwork = nil
-              attendance.next_day = nil
-              attendance.work_contents = nil
-              attendance.applied_overwork = nil
-              attendance.overwork_confirmation = nil
-              attendance.save
+              attendance.update_attributes!(finish_overwork: nil,
+                                            next_day: nil,
+                                            work_contents: nil,
+                                            applied_overwork: nil,
+                                            overwork_confirmation: nil)
             end
           else
             attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
-            attendance.overwork_flag = true
+            attendance.update_attributes!(overwork_flag: true)
           end
-          attendance.overwork_reflection = false
-          attendance.save
+          attendance.update_attributes!(overwork_reflection: false)
         end
       end
     end
@@ -242,7 +235,7 @@ class AttendancesController < ApplicationController
     #一般→上長(上長→上長)と、#上長→一般(上長→上長)でストロングパラメータを分ける
     #１ヶ月分の勤怠申請情報(申請者→上長)を扱う
     def attendances_request_params
-      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :change_attendances_confirmation, :change_attendances_reflection])[:attendances]
+      params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :applied_attendances_change, :change_attendances_confirmation])[:attendances]
     end
 
     #1ヶ月分の勤怠申請情報(上長→申請者)を扱う

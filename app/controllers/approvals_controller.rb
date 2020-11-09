@@ -4,8 +4,7 @@ class ApprovalsController < ApplicationController
     @user = User.find(params[:user_id])
     @approval = Approval.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを用いて更新
-      @approval.approval_superior_confirmation = 2
-      @approval.save
+      @approval.update_attributes!(approval_superior_confirmation: 2)
       @approval.update_attributes!(approval_request_params)
     end
     flash[:success] = "#{@approval.applied_month.month}月分の勤怠を申請しました。"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201106130043) do
+ActiveRecord::Schema.define(version: 20201109105658) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -75,6 +75,7 @@ ActiveRecord::Schema.define(version: 20201106130043) do
     t.datetime "b_finished_at"
     t.string "b_note"
     t.integer "b_applied_attendances_change"
+    t.integer "b_change_attendances_confirmation"
     t.index ["attendance_id"], name: "index_histories_on_attendance_id"
   end
 
@@ -87,10 +88,10 @@ ActiveRecord::Schema.define(version: 20201106130043) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-11-06 08:00:00"
+    t.datetime "basic_time", default: "2020-11-09 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "desig_start_worktime", default: "2020-11-06 08:00:00"
-    t.datetime "desig_finish_worktime", default: "2020-11-06 17:00:00"
+    t.datetime "desig_start_worktime", default: "2020-11-09 08:00:00"
+    t.datetime "desig_finish_worktime", default: "2020-11-09 17:00:00"
     t.integer "employee_number"
     t.integer "card_id"
     t.index ["email"], name: "index_users_on_email", unique: true
