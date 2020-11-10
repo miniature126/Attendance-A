@@ -1,5 +1,5 @@
 class ChangeDataAppliedMonthToApprovals < ActiveRecord::Migration[5.1]
-  def change
+  def up
     change_column :approvals, :applied_month, :date
   end
 end
