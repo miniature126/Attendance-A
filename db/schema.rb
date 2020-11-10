@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200920063743) do
+ActiveRecord::Schema.define(version: 20201108062727) do
 
   create_table "approvals", force: :cascade do |t|
-    t.integer "applied_approval_superior", default: 1
-    t.integer "approval_superior_confirmation", default: 1
+    t.integer "applied_approval_superior"
+    t.integer "approval_superior_confirmation"
     t.boolean "approval_superior_reflection"
     t.date "applied_month"
     t.integer "user_id"
@@ -42,7 +42,41 @@ ActiveRecord::Schema.define(version: 20200920063743) do
     t.boolean "change_attendances_reflection"
     t.datetime "started_at_before_change"
     t.datetime "finished_at_before_change"
+    t.boolean "log_flag"
+    t.boolean "overwork_flag", default: false
+    t.boolean "one_month_flag", default: false
     t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
+  create_table "corrections", force: :cascade do |t|
+    t.date "date"
+    t.datetime "before_attendance_time"
+    t.datetime "before_leaving_time"
+    t.datetime "attendance_time"
+    t.datetime "leaving_time"
+    t.integer "instructor"
+    t.date "approval_date"
+    t.integer "attendance_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attendance_id"], name: "index_corrections_on_attendance_id", unique: true
+  end
+
+  create_table "histories", force: :cascade do |t|
+    t.datetime "b_finish_overwork"
+    t.boolean "b_next_day"
+    t.string "b_work_contents"
+    t.integer "b_applied_overwork"
+    t.integer "b_overwork_confirmation"
+    t.integer "attendance_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "b_started_at"
+    t.datetime "b_finished_at"
+    t.string "b_note"
+    t.integer "b_applied_attendances_change"
+    t.integer "b_change_attendances_confirmation"
+    t.index ["attendance_id"], name: "index_histories_on_attendance_id"
   end
 
   create_table "users", force: :cascade do |t|

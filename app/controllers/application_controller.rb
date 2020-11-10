@@ -53,8 +53,10 @@ class ApplicationController < ActionController::Base
       end
       @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
     end
-    
-  rescue ActiveRecord::RecordInvalid #トランザクションによるエラー分岐
+  
+  #トランザクションによるエラー分岐。e.record.errorsでエラー内容が参照できる
+  rescue ActiveRecord::RecordInvalid => e
+    debugger
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url
   end
