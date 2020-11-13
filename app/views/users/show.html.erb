@@ -33,19 +33,19 @@
     <div>
         <ul>
             <%# 申請がある時だけリンクにする %>
-            <li>
-                <%= link_to_if @approval_application_sum > 0, "【所属長承認申請のお知らせ】", user_edit_approvals_superior_notice_path(@user), remote: true, class: "link__superior--notice" %>
-                <% if @approval_application_sum > 0 %>
-                    <font color="red"><b><%= @approval_application_sum %>件の通知があります</b></font>
-                <% end %>
-            </li> 
-            <li>
-                <%= link_to_if @attendances_application_sum > 0, "【勤怠変更申請のお知らせ】", attendances_edit_change_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
-                <% if @attendances_application_sum > 0 %>
-                    <font color="red"><b><%= @attendances_application_sum %>件の通知があります</b></font>
-                <% end %>
-            </li>
             <% if current_user.superior? %>
+                <li>
+                    <%= link_to_if @approval_application_sum > 0, "【所属長承認申請のお知らせ】", user_edit_approvals_superior_notice_path(@user), remote: true, class: "link__superior--notice" %>
+                    <% if @approval_application_sum > 0 %>
+                        <font color="red"><b><%= @approval_application_sum %>件の通知があります</b></font>
+                    <% end %>
+                </li> 
+                <li>
+                    <%= link_to_if @attendances_application_sum > 0, "【勤怠変更申請のお知らせ】", attendances_edit_change_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
+                    <% if @attendances_application_sum > 0 %>
+                        <font color="red"><b><%= @attendances_application_sum %>件の通知があります</b></font>
+                    <% end %>
+                </li>
                 <li>
                     <%= link_to_if @overwork_application_sum > 0, "【残業申請のお知らせ】", attendances_edit_overwork_notice_user_path(@user), remote: true, class: "link__superior--notice" %>
                     <% if @overwork_application_sum > 0 %>
@@ -194,19 +194,20 @@
                 <td rowspan="2"><%= format("%.2f", @total_working_times.to_f) %></td>
                 <td rowspan="2", colspan="5"></td>
                 <td>
+                    所属長承認&emsp;
                     <% @superior.each do |superior| %>
                         <% if superior.id == @approval.applied_approval_superior %> <%# 上長のidが申請先のidと等しい場合 %>
                             <% if @approval.approval_superior_confirmation == 2 %>
-                                所属長承認　<%= superior.name %>へ申請中
+                                <%= superior.name %>へ申請中
                             <% elsif @approval.approval_superior_confirmation == 3 %>
-                                所属長承認　<%= superior.name %>より承認済
+                                <%= superior.name %>より承認済
                             <% elsif @approval.approval_superior_confirmation == 4 %>
-                                所属長承認　<%= superior.name %>より否認
+                                <%= superior.name %>より否認
                             <% end %>
                         <% end %>
                     <% end %>
                     <% unless @approval.approval_flag %>
-                        未申請
+                        未
                     <% end%>
                     <% if @approval.approval_superior_confirmation == nil || @approval.approval_superior_confirmation == 4 %>
                             <%= form_with(model: @approval, url: user_approval_path(@user, @approval), local: true, method: :patch) do |f| %>

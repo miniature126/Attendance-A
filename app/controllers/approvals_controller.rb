@@ -4,8 +4,12 @@ class ApprovalsController < ApplicationController
     @user = User.find(params[:user_id])
     @approval = Approval.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを用いて更新
-      @approval.update_attributes!(approval_superior_confirmation: 2)
+      if @approval.approval_flag #2回目以降の申請の場合、１つ前の値を保持しておくカラムに、値を移す
+        @approval.update_attributes!(b_applied_approval_superior: @approval.applied_approval_superior,
+                                     b_approval_superior_confirmation: @approval.approval_superior_confirmation)
+      end
       @approval.update_attributes!(approval_request_params)
+      @approval.update_attributes!(approval_superior_confirmation: 2)
     end
     flash[:success] = "#{@approval.applied_month.month}月分の勤怠を申請しました。"
     redirect_to user_url(@user)
@@ -24,7 +28,18 @@ class ApprovalsController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクション処理開始
       approval_notice_params.each do |id, item|
         approval = Approval.find(id)
-        approval.update_attributes!(item) if ActiveRecord::Type::Boolean.new.cast(params[:user][:approvals][id][:approval_superior_reflection]) #string型→boolean型へ変更
+        if ActiveRecord::Type::Boolean.new.cast(params[:user][:approvals][id][:approval_superior_reflection]) #string型→boolean型へ変更
+          if params[:user][:approvals][id][:approval_superior_confirmation] == 1 #「なし」が選択された場合
+            if #初回更新の場合 
+              #値を全て空にする
+            else #2回目以降の更新の場合
+              #１つ前の値に戻す
+            end
+          else #「申請中」「承認」「否認」での更新
+            approval.update_attributes!(item)
+            approval.update_attributes!(approval_flag: true) #上記の内容で1度でも更新していればフラグを立てる
+          end
+        end
       end
     end
     flash[:success] = "1ヶ月分の勤怠申請情報を更新しました。"
