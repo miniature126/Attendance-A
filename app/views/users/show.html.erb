@@ -169,9 +169,7 @@
                                 <% end %>
                             <% end %>
                             <% if day.applied_attendances_change == superior.id %>
-                                <% if day.change_attendances_confirmation == 1 %>
-                                    申請なし
-                                <% elsif day.change_attendances_confirmation == 2 %>
+                                <% if day.change_attendances_confirmation == 2 %>
                                     <%= superior.name %>へ勤怠変更申請中
                                 <% elsif day.change_attendances_confirmation == 3 %>
                                     <%= superior.name %>より勤怠変更承認済
@@ -195,21 +193,22 @@
                 <td rowspan="2", colspan="5"></td>
                 <td>
                     所属長承認&emsp;
-                    <% @superior.each do |superior| %>
-                        <% if superior.id == @approval.applied_approval_superior %> <%# 上長のidが申請先のidと等しい場合 %>
-                            <% if @approval.approval_superior_confirmation == 2 %>
-                                <%= superior.name %>へ申請中
-                            <% elsif @approval.approval_superior_confirmation == 3 %>
-                                <%= superior.name %>より承認済
-                            <% elsif @approval.approval_superior_confirmation == 4 %>
-                                <%= superior.name %>より否認
+                    <% if @approval.applied_approval_superior.present? %>
+                        <% @superior.each do |superior| %>
+                            <% if superior.id == @approval.applied_approval_superior %> <%# 上長のidが申請先のidと等しい場合 %>
+                                <% if @approval.approval_superior_confirmation == 2 %>
+                                    <%= superior.name %>へ申請中
+                                <% elsif @approval.approval_superior_confirmation == 3 %>
+                                    <%= superior.name %>より承認済
+                                <% elsif @approval.approval_superior_confirmation == 4 %>
+                                    <%= superior.name %>より否認
+                                <% end %>
                             <% end %>
                         <% end %>
-                    <% end %>
-                    <% unless @approval.approval_flag %>
+                    <% else %>
                         未
                     <% end%>
-                    <% if @approval.approval_superior_confirmation == nil || @approval.approval_superior_confirmation == 4 %>
+                    <% unless @approval.approval_superior_confirmation == 2 %>
                             <%= form_with(model: @approval, url: user_approval_path(@user, @approval), local: true, method: :patch) do |f| %>
                                 <% if current_user == @user %>
                                     <%= f.collection_select :applied_approval_superior, @superior, :id, :name,

@@ -4,16 +4,17 @@ class ApprovalsController < ApplicationController
     @user = User.find(params[:user_id])
     @approval = Approval.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを用いて更新
-      if @approval.approval_flag #2回目以降の申請の場合、１つ前の値を保持しておくカラムに、値を移す
+      #2回目以降の申請の場合、１つ前の値を保持しておくカラムに、値を移す
+      if @approval.applied_approval_superior.present? && @approval.approval_superior_confirmation.present?
         @approval.update_attributes!(b_applied_approval_superior: @approval.applied_approval_superior,
                                      b_approval_superior_confirmation: @approval.approval_superior_confirmation)
       end
-      @approval.update_attributes!(approval_request_params)
       @approval.update_attributes!(approval_superior_confirmation: 2)
+      @approval.update_attributes!(approval_request_params)
     end
     flash[:success] = "#{@approval.applied_month.month}月分の勤怠を申請しました。"
     redirect_to user_url(@user)
-  rescue ActiveRecord::RecordInvalid #トランザクションエラー分岐
+  rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
     flash[:danger] = "#{@approval.applied_month.month}月分の勤怠申請をキャンセルしました。"
     redirect_to user_url(@user)
   end
@@ -29,15 +30,18 @@ class ApprovalsController < ApplicationController
       approval_notice_params.each do |id, item|
         approval = Approval.find(id)
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:approvals][id][:approval_superior_reflection]) #string型→boolean型へ変更
-          if params[:user][:approvals][id][:approval_superior_confirmation] == 1 #「なし」が選択された場合
-            if #初回更新の場合 
-              #値を全て空にする
-            else #2回目以降の更新の場合
-              #１つ前の値に戻す
+          if params[:user][:approvals][id][:approval_superior_confirmation].to_i == 1 #「なし」での更新
+            if approval.approval_flag #2回目以降の更新の場合
+              approval.update_attributes!(approval_superior_confirmation: approval.b_approval_superior_confirmation,
+                                          applied_approval_superior: approval.b_applied_approval_superior)
+            else #初回更新の場合
+              approval.update_attributes!(approval_superior_confirmation: nil,
+                                          applied_approval_superior: nil)
             end
           else #「申請中」「承認」「否認」での更新
             approval.update_attributes!(item)
-            approval.update_attributes!(approval_flag: true) #上記の内容で1度でも更新していればフラグを立てる
+            #上記の内容で1度でも更新していればフラグを立てる。「変更」のチェックを外す
+            approval.update_attributes!(approval_flag: true, approval_superior_reflection: false)
           end
         end
       end
