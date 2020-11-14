@@ -55,6 +55,7 @@
                             <%= $days_of_the_week[day.worked_on.wday] %>
                           </td>
                         <% end %>
+                        <%# day.history.b_started_at.present? じゃないとダメな時とday.history.present?じゃないとダメな時がある %>
                         <td><%= l(day.history.b_started_at, format: :hour) if day.history.b_started_at.present? %></td>
                         <td><%= l(day.history.b_started_at.floor_to(15.minute), format: :minute) if day.history.b_started_at.present? %> </td>
                         <td><%= l(day.history.b_finished_at, format: :hour) if day.history.b_finished_at.present? %></td>

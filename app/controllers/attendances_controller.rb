@@ -41,11 +41,11 @@ class AttendancesController < ApplicationController
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。(合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる)
-          if attendance.started_at.present? && attendance.finished_at.present? #既に出勤時間と退勤時間が存在する時(2回目以降の申請)
+          if attendance.one_month_flag #2回目以降の申請の場合
             if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
               @history = History.find_by(attendance_id: attendance.id)
             else
-              @history = History.create(attendance_id: attendance.id)
+              @history = History.create!(attendance_id: attendance.id)
             end
             #勤怠変更申請で入力した値をhistoryレコードにコピー
             @history.update_attributes!(b_started_at: attendance.started_at,
@@ -55,15 +55,23 @@ class AttendancesController < ApplicationController
                                         b_applied_attendances_change: attendance.applied_attendances_change,
                                         b_change_attendances_confirmation: attendance.change_attendances_confirmation)
           end
-          attendance.update_attributes!(item) #入力された値と上記の値を上書き
+          debugger
+          if params[:user][:attendances][id][:next_day]#翌日チェックありの場合
+            attendance.assign_attributes(item)
+            attendance.one_day_plus_month
+            attendance.save! #ここでエラー？
+          else
+            attendance.update_attributes!(item) #翌日チェックなしの場合
+          end
           attendance.update_attributes!(change_attendances_confirmation: 2) #ステータスを申請中に
         end
       end
     end
     flash[:success] = "勤怠情報の変更を申請しました。"
     redirect_to user_url(date: params[:date])
-  rescue ActiveRecord::RecordInvalid #トランザクション例外処理
+  rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
     flash[:danger] = "無効なデータ入力、または未入力項目があった為、更新をキャンセルしました。"
+    debugger
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
@@ -77,9 +85,8 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
-        if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得(レコードが存在する＝2回目以降の申請)
-          @history = History.find_by(attendance_id: attendance.id)
-        end
+        #attendanceに紐付くhistoryを取得(レコードが存在する＝2回目以降の申請)
+        @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present?
         #「変更」にチェックが入っている時は更新、更新後は変更カラムをfalseに
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
           if params[:user][:attendances][id][:change_attendances_confirmation].to_i == 1 #ステータス「なし」が選択された場合、カラムを空に
@@ -101,7 +108,7 @@ class AttendancesController < ApplicationController
           else
             attendance.update_attributes!(item) 
             attendance.update_attributes!(one_month_flag: true, change_attendances_reflection: false)
-            if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ
+            if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ(勤怠ログ表示用処理)
               if attendance.correction.present?
                 @correction = attendance.correction
                 #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
@@ -149,16 +156,16 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
         #2回目以降の残業申請の場合、値を@historyにコピーする
-        if @attendance.overwork_flag == true
+        if @attendance.overwork_flag
           @history.update_attributes!(b_finish_overwork: @attendance.finish_overwork,
-                                    b_next_day: @attendance.next_day,
-                                    b_work_contents: @attendance.work_contents,
-                                    b_applied_overwork: @attendance.applied_overwork,
-                                    b_overwork_confirmation: @attendance.overwork_confirmation)
+                                      b_next_day: @attendance.next_day,
+                                      b_work_contents: @attendance.work_contents,
+                                      b_applied_overwork: @attendance.applied_overwork,
+                                      b_overwork_confirmation: @attendance.overwork_confirmation)
         end
         if params[:user][:attendances][:next_day]
           @attendance.assign_attributes(overwork_request_params)
-          @attendance.one_day_plus
+          @attendance.one_day_plus_overwork
           @attendance.save!
         else
           @attendance.update_attributes!(overwork_request_params)
@@ -185,11 +192,7 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
-        if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
-          @history = History.find_by(attendance_id: attendance.id)
-        else
-          @history = History.create(attendance_id: attendance.id)
-        end
+        @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得
         user = User.find_by(id: attendance.user_id)
         user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
