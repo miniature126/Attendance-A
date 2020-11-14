@@ -152,7 +152,7 @@
                     <td><%= l(day.finish_overwork.floor_to(15.minute), format: :minute) if day.finish_overwork.present? %></td>
                     <td>
                         <% if day.finish_overwork.present? %>
-                                <%= overwork_times(@user.desig_finish_worktime, day.finish_overwork, day.next_day, day.worked_on) %>
+                                <%= overwork_times(@user.desig_finish_worktime, day.finish_overwork, day.worked_on) %>
                         <% end %>
                     </td>
                     <td><%= day.work_contents %></td>

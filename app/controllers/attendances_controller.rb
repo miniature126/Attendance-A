@@ -6,7 +6,7 @@ class AttendancesController < ApplicationController
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
   before_action :set_history, only: [:update_overwork_request]
 
-  include ActiveModel::Dirty
+  include AttendancesHelper
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
   
@@ -146,23 +146,33 @@ class AttendancesController < ApplicationController
     #指定勤務終了時間の日付を残業申請した日の日付に合わせ、保存
     @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
     @user.save
-    if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
-      #2回目以降の残業申請の場合、値を@historyにコピーする
-      if @attendance.overwork_flag == true
-        @history.update_attributes(b_finish_overwork: @attendance.finish_overwork,
-                                   b_next_day: @attendance.next_day,
-                                   b_work_contents: @attendance.work_contents,
-                                   b_applied_overwork: @attendance.applied_overwork,
-                                   b_overwork_confirmation: @attendance.overwork_confirmation)
+    ActiveRecord::Base.transaction do #トランザクションを開始
+      if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
+        #2回目以降の残業申請の場合、値を@historyにコピーする
+        if @attendance.overwork_flag == true
+          @history.update_attributes!(b_finish_overwork: @attendance.finish_overwork,
+                                    b_next_day: @attendance.next_day,
+                                    b_work_contents: @attendance.work_contents,
+                                    b_applied_overwork: @attendance.applied_overwork,
+                                    b_overwork_confirmation: @attendance.overwork_confirmation)
+        end
+        if params[:user][:attendances][:next_day]
+          @attendance.assign_attributes(overwork_request_params)
+          @attendance.one_day_plus
+          @attendance.save!
+        else
+          @attendance.update_attributes!(overwork_request_params)
+        end
+        @attendance.update_attributes!(overwork_confirmation: 2, next_day: false) #残業申請のステータスを「申請中」
       end
-      if @attendance.update_attributes(overwork_request_params)
-        @attendance.update_attributes(overwork_confirmation: 2) #残業申請のステータスを「申請中」
-        flash[:success] = "残業を申請しました。"
-      else
-        flash[:danger] = "申請をキャンセルしました。"
-      end
+      flash[:success] = "#{l(@attendance.worked_on, format: :date)}の残業を申請しました。"
+      redirect_to user_url(@user)
+
+    rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
+      flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
+      redirect_to user_url(@user)
     end
-    redirect_to user_url(@user)
+      
   end
   
   def edit_overwork_notice
@@ -209,7 +219,7 @@ class AttendancesController < ApplicationController
     end
     flash[:success] = "情報を更新しました。"
     redirect_to user_url(@superior)
-  rescue ActiveRecord::RecordInvalid #トランザクションエラー分岐
+  rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
     flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
     redirect_to user_url(@superior)
   end

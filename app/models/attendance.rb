@@ -64,5 +64,9 @@ class Attendance < ApplicationRecord
       end
     end
   end
-  
+
+  #翌日チェック有りの場合は+1日
+  def one_day_plus
+    self.finish_overwork += 1.day
+  end  
 end
