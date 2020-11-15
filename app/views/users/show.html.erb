@@ -150,11 +150,7 @@
                     <td><%= day.note %></td>
                     <td><%= l(day.finish_overwork, format: :hour) if day.finish_overwork.present? %></td>
                     <td><%= l(day.finish_overwork.floor_to(15.minute), format: :minute) if day.finish_overwork.present? %></td>
-                    <td>
-                        <% if day.finish_overwork.present? %>
-                                <%= overwork_times(@user.desig_finish_worktime, day.finish_overwork, day.worked_on) %>
-                        <% end %>
-                    </td>
+                    <td><%= overwork_times(@user.desig_finish_worktime, day.finish_overwork, day.worked_on) if day.finished_at.present? %></td>
                     <td><%= day.work_contents %></td>
                     <td>
                         <% @superior.each do |superior| %>

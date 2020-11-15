@@ -12,6 +12,7 @@
                   <th>日付</th>
                   <th>曜日</th>
                   <th>終了予定時間</th>
+                  <th>指定勤務終了時間</th>
                   <th>時間外時間</th>
                   <th>業務処理内容</th>
                   <th>指示者確認㊞</th>
@@ -45,9 +46,8 @@
                             </td>
                         <% end %>
                         <td><%= l(day.finish_overwork, format: :time) %></td>
-                        <td>
-                          <%= overwork_times(user.desig_finish_worktime, day.finish_overwork, day.worked_on) %>
-                        </td>
+                        <td><%= l(user.desig_finish_worktime, format: :time) %></td>
+                        <td><%= overwork_times(user.desig_finish_worktime, day.finish_overwork, day.worked_on) %></td>
                         <td><%= day.work_contents %></td>
                         <td><%= attendance.select :overwork_confirmation,
                                 { "なし(申請取り消し)": 1, "申請中": 2, "承認": 3, "否認": 4 },
