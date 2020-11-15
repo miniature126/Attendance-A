@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201111121434) do
+ActiveRecord::Schema.define(version: 20201115064406) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(version: 20201111121434) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "finish_overwork"
-    t.boolean "next_day"
+    t.boolean "next_day", default: false
     t.string "work_contents"
     t.integer "overwork_confirmation"
     t.integer "applied_overwork"

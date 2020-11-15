@@ -164,6 +164,7 @@ class AttendancesController < ApplicationController
                                       b_overwork_confirmation: @attendance.overwork_confirmation)
         end
         if params[:user][:attendances][:next_day]
+          debugger
           @attendance.assign_attributes(overwork_request_params)
           @attendance.one_day_plus_overwork
           @attendance.save!
@@ -205,9 +206,9 @@ class AttendancesController < ApplicationController
                                             work_contents: @history.b_work_contents,
                                             applied_overwork: @history.b_applied_overwork,
                                             overwork_confirmation: @history.b_overwork_confirmation)
-            else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする
+            else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする(翌日はfalseに)
               attendance.update_attributes!(finish_overwork: nil,
-                                            next_day: nil,
+                                            next_day: false,
                                             work_contents: nil,
                                             applied_overwork: nil,
                                             overwork_confirmation: nil)
