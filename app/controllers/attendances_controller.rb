@@ -170,7 +170,7 @@ class AttendancesController < ApplicationController
         else
           @attendance.update_attributes!(overwork_request_params)
         end
-        @attendance.update_attributes!(overwork_confirmation: 2, next_day: false) #残業申請のステータスを「申請中」
+        @attendance.update_attributes!(overwork_confirmation: 2) #残業申請のステータスを「申請中」
       end
       flash[:success] = "#{l(@attendance.worked_on, format: :date)}の残業を申請しました。"
       redirect_to user_url(@user)
