@@ -55,11 +55,10 @@ class AttendancesController < ApplicationController
                                         b_applied_attendances_change: attendance.applied_attendances_change,
                                         b_change_attendances_confirmation: attendance.change_attendances_confirmation)
           end
-          debugger
-          if params[:user][:attendances][id][:next_day]#翌日チェックありの場合
+          if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:next_day]) #翌日チェックありの場合
             attendance.assign_attributes(item)
             attendance.one_day_plus_month
-            attendance.save! #ここでエラー？
+            attendance.save!
           else
             attendance.update_attributes!(item) #翌日チェックなしの場合
           end
@@ -71,7 +70,6 @@ class AttendancesController < ApplicationController
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
     flash[:danger] = "無効なデータ入力、または未入力項目があった為、更新をキャンセルしました。"
-    debugger
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
@@ -100,7 +98,7 @@ class AttendancesController < ApplicationController
             else #初回の申請の場合
               attendance.update_attributes!(started_at: nil,
                                             finished_at: nil,
-                                            next_day: nil,
+                                            next_day: false,
                                             note: nil,
                                             applied_attendances_change: nil,
                                             change_attendances_confirmation: nil)
@@ -138,7 +136,6 @@ class AttendancesController < ApplicationController
     flash[:success] = "勤怠変更申請の情報を更新しました。"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
-    debugger
     flash[:danger] = "更新をキャンセルしました。"
     redirect_to user_url(@superior)
   end
@@ -154,7 +151,7 @@ class AttendancesController < ApplicationController
     @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
     @user.save
     ActiveRecord::Base.transaction do #トランザクションを開始
-      if User.find(params[:user][:attendances][:applied_overwork]).superior? #申請先のユーザー、本当に上長？
+      if User.find(params[:user][:attendances][:applied_overwork].to_i).superior? #申請先のユーザー、本当に上長？
         #2回目以降の残業申請の場合、値を@historyにコピーする
         if @attendance.overwork_flag
           @history.update_attributes!(b_finish_overwork: @attendance.finish_overwork,
@@ -163,8 +160,7 @@ class AttendancesController < ApplicationController
                                       b_applied_overwork: @attendance.applied_overwork,
                                       b_overwork_confirmation: @attendance.overwork_confirmation)
         end
-        if params[:user][:attendances][:next_day]
-          debugger
+        if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][:next_day]) #翌日チェックありの場合
           @attendance.assign_attributes(overwork_request_params)
           @attendance.one_day_plus_overwork
           @attendance.save!
