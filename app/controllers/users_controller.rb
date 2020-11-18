@@ -1,3 +1,5 @@
+require "csv"
+
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                   :edit_basic_info_all, :update_basic_info_all]
@@ -20,6 +22,28 @@ class UsersController < ApplicationController
     @approval_application_sum = Approval.where(approval_superior_confirmation: 2).where(applied_approval_superior: params[:id]).count
     @overwork_application_sum = Attendance.where(overwork_confirmation: 2).where(applied_overwork: params[:id]).count
     @attendances_application_sum = Attendance.where(change_attendances_confirmation: 2).where(applied_attendances_change: params[:id]).count
+
+    respond_to do |format|
+      format.html #/users/:idの場合は
+      format.csv do |csv| #/users/:id.csvになっている場合は(?)
+        send_attendances_csv(@attendances)
+      end
+    end
+  end
+
+  def send_attendances_csv(attendances)
+    csv_data = CSV.generate do |csv|
+      header = %w(worked_on started_at finished_at)
+      csv << header
+
+      attendances.each do |attendance|
+        if attendance.started_at.present? && attendance.finished_at.present?
+          values = [attendance.worked_on, attendance.started_at, attendance.finished_at]
+          csv << values
+        end
+      end
+    end
+    send_data(csv_data, filename: "#{@user.name}　勤怠情報　#{@first_day.mon}月.csv")
   end
   
   def new
