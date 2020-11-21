@@ -70,7 +70,7 @@ class Attendance < ApplicationRecord
     self.finish_overwork += 1.day
   end  
 
-  #勤怠変更申請時翌日チェック有りの場合は+1日　+1日できてなさそう！要編集(11/14)
+  #勤怠変更申請時翌日チェック有りの場合は+1日
   def one_day_plus_month
     self.finished_at += 1.day
   end

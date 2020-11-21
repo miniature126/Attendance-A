@@ -27,6 +27,7 @@ Rails.application.routes.draw do
       
     end
     resources :attendances, only: :update
+      get "csv_export_attendances", on: :member #CSV出力処理用
     resources :approvals, only: :update #申請時の更新用、編集ページはUsersのshow.html.erbと同一なのでなし
     get 'edit_approvals_superior_notice', to: "approvals#edit_approval_superior_notice" #複数申請される可能性があるので、approvalのidはいらない。
     patch 'update_approvals_superior_notice', to: "approvals#update_approval_superior_notice"
