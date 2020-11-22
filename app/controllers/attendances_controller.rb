@@ -9,6 +9,7 @@ class AttendancesController < ApplicationController
   include AttendancesHelper
   
   UPDATE_ERROR_MSG = "勤怠登録に失敗しました。やり直してください。"
+  UPDATE_ERROR_MSG_2 = "無効なデータ入力または未入力項目があった為、更新をキャンセルしました。"
   
   def update
     @user = User.find(params[:user_id])
@@ -69,7 +70,7 @@ class AttendancesController < ApplicationController
     flash[:success] = "勤怠情報の変更を申請しました。"
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
-    flash[:danger] = "無効なデータ入力、または未入力項目があった為、更新をキャンセルしました。"
+    flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
   
@@ -133,10 +134,10 @@ class AttendancesController < ApplicationController
         end
       end     
     end  
-    flash[:success] = "勤怠変更申請の情報を更新しました。"
+    flash[:success] = "勤怠変更申請を更新しました。"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
-    flash[:danger] = "更新をキャンセルしました。"
+    flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to user_url(@superior)
   end
   
@@ -173,7 +174,7 @@ class AttendancesController < ApplicationController
       redirect_to user_url(@user)
 
     rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
-      flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
+      flash[:danger] = UPDATE_ERROR_MSG_2
       redirect_to user_url(@user)
     end
       
@@ -217,10 +218,10 @@ class AttendancesController < ApplicationController
         end
       end
     end
-    flash[:success] = "情報を更新しました。"
+    flash[:success] = "残行申請を更新しました。"
     redirect_to user_url(@superior)
   rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
-    flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
+    flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to user_url(@superior)
   end
   

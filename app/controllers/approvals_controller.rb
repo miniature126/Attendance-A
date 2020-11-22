@@ -1,5 +1,7 @@
 class ApprovalsController < ApplicationController
   
+  UPDATE_ERROR_MSG_2 = "無効なデータ入力または未入力項目があった為、更新をキャンセルしました。"
+
   def update
     @user = User.find(params[:user_id])
     @approval = Approval.find(params[:id])
@@ -15,7 +17,7 @@ class ApprovalsController < ApplicationController
     flash[:success] = "#{@approval.applied_month.month}月分の勤怠を申請しました。"
     redirect_to user_url(@user)
   rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
-    flash[:danger] = "#{@approval.applied_month.month}月分の勤怠申請をキャンセルしました。"
+    flash[:danger] = "#{@approval.applied_month.month}月分の勤怠申請をキャンセルしました。未入力項目がないか確認してください。"
     redirect_to user_url(@user)
   end
   
@@ -46,10 +48,10 @@ class ApprovalsController < ApplicationController
         end
       end
     end
-    flash[:success] = "1ヶ月分の勤怠申請情報を更新しました。"
+    flash[:success] = "所属長承認申請を更新しました。"
     redirect_to user_url(@superior)
   rescue ActiveRecord::RecordInvalid #トランザクション例外処理
-    flash[:danger] = "無効なデータがあった為、更新をキャンセルしました。"
+    flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to user_url(@superior)
   end
 
