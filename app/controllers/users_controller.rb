@@ -3,11 +3,13 @@ require "csv"
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                   :edit_basic_info_all, :update_basic_info_all, :csv_export_attendances]
+  before_action :admin_attendances, only: :show
   before_action :set_superior_users, only: :show
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                         :edit_basic_info_all, :update_basic_info_all]
   before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all, :update_basic_info_all]
+  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
+  # before_action :not_admin_user, only: [:show, :csv_export_attendances] 管理者画面作成後必要なければ削除
   before_action :superior_or_correct_user, only: :show
   before_action :set_one_month, only: [:show, :csv_export_attendances]
   
@@ -87,19 +89,6 @@ class UsersController < ApplicationController
   end
   
   def edit_basic_info_all
-    @users = User.all
-  end
-  
-  def update_basic_info_all
-    @users = User.all
-    @users.each do |user|
-      unless user.update_attributes(basic_info_params)
-        flash[:danger] = "基本情報の更新に失敗しました。<br>" + user.errors.full_messages.join("<br>")
-        render :edit_basic_info_all
-      end
-    end
-    flash[:success] = "全ユーザーの基本情報を更新しました。"
-    redirect_to users_url
   end
   
   private

@@ -1,6 +1,8 @@
 class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month]
   before_action :logged_in_user, only: [:update, :edit_one_month]
+  before_action :not_admin_user, only: [:update, :edit_one_month, :update_one_month, :edit_overwork_request, :update_overwork_request,
+                                        :edit_change_notice, :update_change_notice, :edit_overwork_notice, :update_overwork_notice]
   before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_one_month, only: :edit_one_month
   before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]

@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   include SessionsHelper
+  before_action :set_user, only: :admin_attendances
   
   $days_of_the_week = %w{日 月 火 水 木 金 土}
   
@@ -30,10 +31,23 @@ class ApplicationController < ActionController::Base
     redirect_to root_url unless current_user.superior?
   end
   
-  #システム管理権限所有かどうか判定
+  #システム管理権限所有かどうか判定(falseだとダメ)
   def admin_user
     redirect_to root_url unless current_user.admin?
   end
+
+  #システム管理者の勤怠画面でないかを判定
+  def admin_attendances
+    redirect_to root_url if @user.admin?
+  end
+
+  #システム管理者権限所有かどうか判定(trueだとダメ) 管理者画面作成後必要なければ削除
+  # def not_admin_user
+  #   if current_user.admin?
+  #     flash[:danger] = "アクセスできません。"
+  #     redirect_to root_url
+  #   end
+  # end
   
   #ページ出力前に１ヶ月分のデータの存在を確認・セットする
   def set_one_month
@@ -78,5 +92,4 @@ class ApplicationController < ActionController::Base
       redirect_to root_url
     end
   end
-
 end
