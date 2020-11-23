@@ -1,8 +1,11 @@
 <% provide(:title, "All users") %>
 <h1>ユーザー一覧</h1>
 
+<%= form_with url: "#", multipart: true do %>
+
+
 <%= will_paginate %>
-  
+
 <%= will_paginate %>
 
 

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   
   #resources→7つのアクションを一括生成してくれるメソッド
   resources :users do
+    collection { post :csv_import } #CSVインポート処理用
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'
@@ -24,8 +25,8 @@ Rails.application.routes.draw do
       get 'attendances/edit_overwork_notice'
       patch 'update_overwork_notice', to: "attendances#update_overwork_notice"
       get 'attendances/attendance_log', to: "corrections#attendance_log"
-      
     end
+
     resources :attendances, only: :update
       get "csv_export_attendances", on: :member #CSV出力処理用
     resources :approvals, only: :update #申請時の更新用、編集ページはUsersのshow.html.erbと同一なのでなし
