@@ -9,7 +9,6 @@ class UsersController < ApplicationController
                                         :edit_basic_info_all, :update_basic_info_all]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
-  # before_action :not_admin_user, only: [:show, :csv_export_attendances] 管理者画面作成後必要なければ削除
   before_action :superior_or_correct_user, only: :show
   before_action :set_one_month, only: [:show, :csv_export_attendances]
   

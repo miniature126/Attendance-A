@@ -40,14 +40,6 @@ class ApplicationController < ActionController::Base
   def admin_attendances
     redirect_to root_url if @user.admin?
   end
-
-  #システム管理者権限所有かどうか判定(trueだとダメ) 管理者画面作成後必要なければ削除
-  # def not_admin_user
-  #   if current_user.admin?
-  #     flash[:danger] = "アクセスできません。"
-  #     redirect_to root_url
-  #   end
-  # end
   
   #ページ出力前に１ヶ月分のデータの存在を確認・セットする
   def set_one_month

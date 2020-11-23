@@ -12,10 +12,10 @@ class User < ApplicationRecord
                     uniqueness: true
   validates :department, length: { in: 2..30 }, allow_blank: true
   validates :basic_time, presence: true
-  validates :desig_start_worktime, presence: true
-  validates :desig_finish_worktime, presence: true
+  validates :designated_work_start_time, presence: true
+  validates :designated_work_end_time, presence: true
   validates :employee_number, presence: true, allow_blank: true
-  validates :card_id, presence: true, allow_blank: true
+  validates :uid, presence: true, allow_blank: true
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
   
