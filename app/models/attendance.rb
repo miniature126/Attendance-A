@@ -25,10 +25,9 @@ class Attendance < ApplicationRecord
   validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   validate :finish_overwork_exist_work_contents_applied_overwork_exist
-
-  #確認したい…
+  
   def administrator_cannot_enter_attendance
-    errors.add("管理者は勤怠情報を入力できません") if user.admin
+    errors.add(:admin, "は勤怠情報を入力できません") if user.admin
   end
   
   def finished_at_is_invalid_without_a_started_at

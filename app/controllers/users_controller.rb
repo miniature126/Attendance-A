@@ -13,8 +13,9 @@ class UsersController < ApplicationController
   before_action :set_one_month, only: [:show, :csv_export_attendances]
   
   def index
+    @users = User.where.not(admin: true).paginate(page: params[:page])
     #全てのユーザー、ページネーション設定、form_withのtext_fieldで受け取ったparams[:search]の中身をself.searchに引数として渡す
-    @users = User.all.paginate(page: params[:page]).search(params[:search])
+    # @users = User.all.paginate(page: params[:page]).search(params[:search])
   end
 
   def show
