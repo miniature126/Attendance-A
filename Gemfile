@@ -15,7 +15,7 @@ gem 'jquery-rails'
 gem 'turbolinks',   '~> 5'
 gem 'jbuilder',     '~> 2.5'
 gem 'rounding'
-gem 'csv' #CSVファイルを読み込むためのgem
+gem 'activerecord-import' #CSVファイルを読み込むためのgem
 gem 'roo'
 
 group :development, :test do

@@ -33,6 +33,8 @@ GEM
       activemodel (= 5.1.7)
       activesupport (= 5.1.7)
       arel (~> 8.0)
+    activerecord-import (1.0.7)
+      activerecord (>= 3.2)
     activesupport (5.1.7)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
@@ -60,7 +62,6 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.7)
     crass (1.0.6)
-    csv (3.1.2)
     erubi (1.9.0)
     execjs (2.7.0)
     faker (2.14.0)
@@ -181,13 +182,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord-import
   awesome_print
   bcrypt
   bootstrap-sass
   bootstrap-will_paginate
   byebug
   coffee-rails (~> 4.2)
-  csv
   faker
   jbuilder (~> 2.5)
   jquery-rails
