@@ -42,7 +42,7 @@ class AttendancesController < ApplicationController
       attendances_request_params.each do |id, item|
         attendance = Attendance.find(id) #レコードを探し格納
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
-          @user.desig_finish_worktime = attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+          @user.designated_work_end_time = attendance.worked_on.midnight.since(@user.designated_work_end_time.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。(合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる)
           if attendance.one_month_flag #2回目以降の申請の場合
             if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
@@ -151,7 +151,7 @@ class AttendancesController < ApplicationController
 
   def update_overwork_request
     #指定勤務終了時間の日付を残業申請した日の日付に合わせ、保存
-    @user.desig_finish_worktime = @attendance.worked_on.midnight.since(@user.desig_finish_worktime.seconds_since_midnight)
+    @user.designated_work_end_time = @attendance.worked_on.midnight.since(@user.designated_work_end_time.seconds_since_midnight)
     @user.save
     ActiveRecord::Base.transaction do #トランザクションを開始
       if User.find(params[:user][:attendances][:applied_overwork].to_i).superior? #申請先のユーザー、本当に上長？
@@ -194,7 +194,7 @@ class AttendancesController < ApplicationController
         attendance = Attendance.find(id)
         @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得
         user = User.find_by(id: attendance.user_id)
-        user.desig_finish_worktime = attendance.worked_on.midnight.since(user.desig_finish_worktime.seconds_since_midnight)
+        user.designated_work_end_time = attendance.worked_on.midnight.since(user.designated_work_end_time.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
         
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)

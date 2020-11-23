@@ -16,8 +16,8 @@ module AttendancesHelper
   end
   
   #指定勤務終了時間と終了予定時間を受け取り、時間外時間を計算して返す
-  def overwork_times(desig_finish, overwork, worked)
-    regular_time = worked.midnight.since(desig_finish.seconds_since_midnight) #worked_onの日付とdesig_finish_worktimeの時間を組み合わせる
+  def overwork_times(desig_end, overwork, worked)
+    regular_time = worked.midnight.since(desig_end.seconds_since_midnight) #worked_onの日付とdesignated_work_end_timeの時間を組み合わせる
     format("%.2f",(((overwork.floor_to(15.minute) - regular_time.floor_to(15.minute)) / 60) / 60.0))
   end
   
