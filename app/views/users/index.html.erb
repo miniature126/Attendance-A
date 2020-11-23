@@ -1,12 +1,14 @@
 <% provide(:title, "All users") %>
-<% if params[:search].present? %>
-  <h1>検索結果</h1>
-<% else %>
-  <h1>全てのユーザー</h1>
-<% end %>
+<h1>ユーザー一覧</h1>
+
+<%= will_paginate %>
+  
+<%= will_paginate %>
+
+
 
 <div class="col-md-10 col-md-offset-1">
-  <%= will_paginate %>
+  <%# will_paginate %>
   <table class="table table-condensed table-hover" id="table-users">
     <thead>
       <tr>
@@ -20,7 +22,7 @@
 
     <% @users.each do |user| %>
       <tr>
-        <td><%= link_to user.name, user %></td>
+        <td><%= user.name %></td>
         <td class="center"><%= user.department.present? ? user.department : "未所属" %></td>
         <td class="center"><%= format_basic_info(user.basic_time) %></td>
         <td class="center"></td>
@@ -36,8 +38,5 @@
       </tr>
     <% end %>
   </table>
-  <%= will_paginate %>
+  <%# will_paginate %>
 </div>
-
-<!-- モーダルウィンドウ表示 -->
-<div id="edit-basic-info" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"></div>

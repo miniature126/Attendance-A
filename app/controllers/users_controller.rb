@@ -14,8 +14,6 @@ class UsersController < ApplicationController
   
   def index
     @users = User.where.not(admin: true).paginate(page: params[:page])
-    #全てのユーザー、ページネーション設定、form_withのtext_fieldで受け取ったparams[:search]の中身をself.searchに引数として渡す
-    # @users = User.all.paginate(page: params[:page]).search(params[:search])
   end
 
   def show
