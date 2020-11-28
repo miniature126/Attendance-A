@@ -9,7 +9,7 @@ class UsersController < ApplicationController
                                         :edit_basic_info_all, :update_basic_info_all]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
-  before_action :superior_or_correct_user, only: :show
+  before_action :admin_or_correct_user, only: :show
   before_action :set_one_month, only: [:show, :csv_export_attendances]
   
   def index
@@ -60,13 +60,34 @@ class UsersController < ApplicationController
   end
   
   def update
-    if @user.update_attributes(user_params)
-      flash[:success] = "ユーザー情報を更新しました。"
-      redirect_to @user
+    if current_user.admin?
+      if @user.update_attributes(user_params)
+        flash[:success] = "#{@user.name}の情報を更新しました。"
+        redirect_to users_url
+      else
+        render :index
+      end
     else
-      render :edit
+      if @user.update_attributes(user_params)
+        flash[:success] = "ユーザー情報を更新しました。"
+        redirect_to @user
+      else
+        render :edit
+      end
     end
   end
+
+    # if @user.update_attributes(user_params)
+    #   if current_user.admin
+    #     flash[:success] = "#{@user.name}の情報を更新しました。"
+    #     redirect_to users_url
+    #   else
+    #     flash[:success] = "ユーザー情報を更新しました。"
+    #     redirect_to @user
+    #   end
+    # else
+    #   render :edit
+    # end
   
   def destroy
     @user.destroy
@@ -97,7 +118,8 @@ class UsersController < ApplicationController
     end
     
     def user_params
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :department, :employee_number, :uid, :password, :password_confirmation,
+                                   :basic_time, :designated_work_start_time, :designated_work_end_time)
     end
     
     def basic_info_params
