@@ -3,13 +3,15 @@
 <h1>ユーザー一覧</h1>
 
 <%= form_with url: csv_import_users_path do |f| %>
-  <%= f.file_field :file, accept: ".csv", class: "form-control-file" %>
+　<%= f.label "ファイルを選択", class: "btn btn-default" %>
+  <%= f.file_field :file, accept: ".csv", class: "import__form" %>
   <%= f.submit "CSVをインポート", class: "btn btn-primary" %>
 <% end %>
 
+
 <%= will_paginate %>
   <% @users.each do |user| %>
-    <p><%= user.name %></p>
+    <h3><%= user.name %></h3>
     <%= link_to "削除", user, method: :delete,
         data: { confirm: "削除してよろしいですか？" },
         class: "btn btn-primary" %>

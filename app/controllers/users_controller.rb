@@ -77,6 +77,7 @@ class UsersController < ApplicationController
     end
   end
 
+    #旧editアクション
     # if @user.update_attributes(user_params)
     #   if current_user.admin
     #     flash[:success] = "#{@user.name}の情報を更新しました。"
