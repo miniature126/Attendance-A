@@ -2,12 +2,19 @@
 
 <h1>ユーザー一覧</h1>
 
-<%= form_with url: csv_import_users_path do |f| %>
-　<%= f.label "ファイルを選択", class: "btn btn-default" %>
-  <%= f.file_field :file, accept: ".csv", class: "import__form" %>
-  <%= f.submit "CSVをインポート", class: "btn btn-primary" %>
-<% end %>
-
+<div class="import__form-btn col-md-4">
+  <%= form_with url: csv_import_users_path do |f| %>
+    <div class="input-group">
+      <label class="input-group-btn">
+        <span class="btn btn-default">
+          ファイルを選択<%= f.file_field :file, accept: ".csv", id: "import__form" %>
+        </span>
+      </label>
+      <input type="text" class="form-control" readonly="">
+    </div>
+    <%= f.submit "CSVをインポート", class: "btn btn-primary" %>
+  <% end %>
+</div>
 
 <%= will_paginate %>
   <% @users.each do |user| %>

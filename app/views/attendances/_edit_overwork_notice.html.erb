@@ -46,8 +46,8 @@
                             </td>
                         <% end %>
                         <td><%= l(day.finish_overwork, format: :time) %></td>
-                        <td><%= l(user.desig_finish_worktime, format: :time) %></td>
-                        <td><%= overwork_times(user.desig_finish_worktime, day.finish_overwork, day.worked_on) %></td>
+                        <td><%= l(user.designated_work_end_time, format: :time) %></td>
+                        <td><%= overwork_times(user.designated_work_end_time, day.finish_overwork, day.worked_on) %></td>
                         <td><%= day.work_contents %></td>
                         <td><%= attendance.select :overwork_confirmation,
                                 { "なし(申請取り消し)": 1, "申請中": 2, "承認": 3, "否認": 4 },
