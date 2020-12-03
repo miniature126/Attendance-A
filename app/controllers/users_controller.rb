@@ -17,7 +17,7 @@ class UsersController < ApplicationController
   end
 
   def csv_import
-    User.inport(params[:file])
+    User.import(params[:file])
     redirect_to users_url
   end
 
