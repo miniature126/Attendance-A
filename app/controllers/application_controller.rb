@@ -77,11 +77,11 @@ class ApplicationController < ActionController::Base
   end
     
   #@userが現在ログインしているユーザー、もしくは上長ユーザーかどうかを確認
-  # def superior_or_correct_user
-  #   @user = User.find(params[:user_id]) if @user.blank?
-  #   unless current_user?(@user) || current_user.superior?
-  #     flash[:danger] = "アクセスできません。"
-  #     redirect_to root_url
-  #   end
-  # end
+  def superior_or_correct_user
+    @user = User.find(params[:user_id]) if @user.blank?
+    unless current_user?(@user) || current_user.superior?
+      flash[:danger] = "アクセスできません。"
+      redirect_to root_url
+    end
+  end
 end
