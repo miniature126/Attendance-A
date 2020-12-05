@@ -42,7 +42,7 @@
         <div id="menu__accordion<%= user.id %>" class="panel-collapse collapse">
           <div class="panel-body">
             <%= form_with(model: user, local: true) do |f| %> 
-              <%# render "shared/error_messages", object: @users %>
+              <%= render "shared/error_messages", model: f.object %> <%# object: user → model: f.object に変更 %>
 
               <%= f.label :name, class: "label-user--edit" %>
               <%= f.text_field :name, class: "form-control" %>

@@ -1,12 +1,27 @@
-<% if @user.errors.any? %>
-  <div id="error_explanation">
-    <div class="alert alert-danger">
-      入力エラーが<%= (@user.errors.count) %>件ありました。
+<% if current_user.admin? %>
+  <% if model.errors.any? %> <%# index.html.erb %> <%# @user → model に変更 %>
+    <div id="error_explanation">
+      <div class="alert alert-danger">
+        入力エラーが<%= (model.errors.count) %>件ありました。
+      </div>
+      <ul>
+      <% model.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
     </div>
-    <ul>
-    <% @user.errors.full_messages.each do |msg| %>
-      <li><%= msg %></li>
-    <% end %>
-    </ul>
-  </div>
+  <% end %>
+<% else %> <%# edit.html.erb %>
+  <% if @user.errors.any? %>
+    <div id="error_explanation">
+      <div class="alert alert-danger">
+        入力エラーが<%= (@user.errors.count) %>件ありました。
+      </div>
+      <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
 <% end %>
