@@ -1,10 +1,10 @@
 class AttendancesController < ApplicationController
-  before_action :set_user, only: [:edit_one_month, :update_one_month]
-  before_action :logged_in_user, only: [:update, :edit_one_month]
-  before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
-  before_action :set_one_month, only: :edit_one_month
-  before_action :set_attendance_user, only: [:edit_overwork_request, :update_overwork_request]
-  before_action :set_history, only: [:update_overwork_request]
+  before_action :set_user, only: [:edit_one_month, :update_one_month] #ユーザー情報を取得
+  before_action :logged_in_user, only: [:update, :edit_one_month] #ログイン済みユーザーか確認
+  before_action :set_one_month, only: :edit_one_month #1ヶ月分の勤怠データを確認、セット
+# before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
+  before_action :set_attendance_set_user, only: [:edit_overwork_request, :update_overwork_request]
+  # before_action :set_history, only: [:update_overwork_request]
 
   include AttendancesHelper
   
@@ -143,7 +143,6 @@ class AttendancesController < ApplicationController
   
   # URLのidにはattendanceのidが入っている
   def edit_overwork_request
-    @attendance = Attendance.find(params[:id])
     @superior = User.where(superior: true).where.not(id: @attendance.user_id)
   end
 
@@ -155,6 +154,7 @@ class AttendancesController < ApplicationController
       if User.find(params[:user][:attendances][:applied_overwork].to_i).superior? #申請先のユーザー、本当に上長？
         #2回目以降の残業申請の場合、値を@historyにコピーする
         if @attendance.overwork_flag
+          set_history
           @history.update_attributes!(b_finish_overwork: @attendance.finish_overwork,
                                       b_next_day: @attendance.next_day,
                                       b_work_contents: @attendance.work_contents,
@@ -228,7 +228,7 @@ class AttendancesController < ApplicationController
   private
     #beforeフィルター
     #idの値が一致するレコード、レコードのuser_idをもとにユーザー情報を取得
-    def set_attendance_user
+    def set_attendance_set_user
       @attendance = Attendance.find(params[:id])
       @user = User.find(@attendance.user_id)
     end

@@ -65,23 +65,16 @@ class UsersController < ApplicationController
   end
   
   def update
-    # if current_user.admin? #管理者側からユーザー情報を更新する場合
-    #   user = User.find(params[:id])
-    #   @users = User.where.not(admin: true).paginate(page: params[:page])
-    #   if user.update_attributes(user_params)
-    #     flash[:success] = "#{user.name}の情報を更新しました。"
-    #     redirect_to users_url
-    #   else
-    #     redirect_to request.referer
-    #     # render :index #url上はshow.html.erbと同じになってしまうので、cmd+Rするとbefore_actionに引っかかる
-    #   end
-    # else #各ユーザーからユーザー情報を更新する場合
-      if @user.update_attributes(user_params)
+    if @user.update_attributes(user_params)
+      if current_user.admin?
+        flash[:success] = "#{@user.name}の情報を更新しました。"
+        redirect_to users_url
+      else
         flash[:success] = "ユーザー情報を更新しました。"
         redirect_to @user
-      else
-        render :edit
       end
+    else
+      render :edit
     end
   end
 
