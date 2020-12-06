@@ -77,19 +77,6 @@ class UsersController < ApplicationController
       render :edit
     end
   end
-
-    #旧updateアクション
-    # if @user.update_attributes(user_params)
-    #   if current_user.admin
-    #     flash[:success] = "#{@user.name}の情報を更新しました。"
-    #     redirect_to users_url
-    #   else
-    #     flash[:success] = "ユーザー情報を更新しました。"
-    #     redirect_to @user
-    #   end
-    # else
-    #   render :edit
-    # end
   
   def destroy
     @user.destroy
