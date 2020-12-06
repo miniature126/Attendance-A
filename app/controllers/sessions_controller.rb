@@ -9,11 +9,8 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       log_in user
       params[:session][:remember_me] == "1" ? remember(user) : forget(user)
-      if user.admin? #ログインしたユーザーが管理者の場合、ユーザー一覧画面に遷移する。管理者でなければ勤怠情報詳細ページ
-        redirect_back_or users_url
-      else
-        redirect_back_or user
-      end
+      flash[:success] = "ログインしました。"
+      user.admin? ? redirect_back_or(users_url) : redirect_back_or(user)
     else 
       flash.now[:danger] = "認証に失敗しました。"
       render :new
