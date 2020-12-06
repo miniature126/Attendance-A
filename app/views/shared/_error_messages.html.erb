@@ -1,27 +1,12 @@
-<% if current_user.admin? %>
-  <% if object.errors.any? %> 
-    <div id="error_explanation">
-      <div class="alert alert-danger">
-        入力エラーが<%= (object.errors.count) %>件ありました。
-      </div>
-      <ul>
-      <% object.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+<% if object.errors.any? %> 
+  <div id="error_explanation">
+    <div class="alert alert-danger">
+      入力エラーが<%= (object.errors.count) %>件ありました。
     </div>
-  <% end %>
-<% else %> <%# edit.html.erb %>
-  <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <div class="alert alert-danger">
-        入力エラーが<%= (@user.errors.count) %>件ありました。
-      </div>
-      <ul>
-      <% @user.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+    <ul>
+    <% object.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
 <% end %>
