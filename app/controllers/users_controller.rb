@@ -85,6 +85,10 @@ class UsersController < ApplicationController
     redirect_to users_url
   end
 
+  def attendance_employee_list
+  
+  end
+
   def edit_basic_info
   end
   
