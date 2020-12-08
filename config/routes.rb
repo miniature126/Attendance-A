@@ -10,7 +10,12 @@ Rails.application.routes.draw do
   
   #resources→7つのアクションを一括生成してくれるメソッド
   resources :users do
-    collection { post :csv_import } #CSVインポート処理用
+    
+    collection do
+      post 'csv_import' #CSVインポート処理用
+      get 'attendance_employee_list'
+    end
+
     member do
       get 'edit_basic_info'
       patch 'update_basic_info'

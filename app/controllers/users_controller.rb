@@ -3,11 +3,12 @@ require "csv"
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                   :edit_basic_info_all, :update_basic_info_all, :csv_export_attendances]
-  before_action :admin_attendances, only: :show
-  before_action :set_superior_users, only: :show
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                         :edit_basic_info_all, :update_basic_info_all]
+  
   before_action :correct_user, only: [:edit, :update]
+  before_action :admin_attendances, only: :show
+  before_action :set_superior_users, only: :show
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
   before_action :superior_or_correct_user, only: :show
   before_action :set_one_month, only: [:show, :csv_export_attendances]
