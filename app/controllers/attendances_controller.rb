@@ -18,12 +18,14 @@ class AttendancesController < ApplicationController
     if @attendance.started_at.nil?
       if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
         flash[:info] = "おはようございます！"
+        @user.update_attributes(started_at_flag: true)
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
     elsif @attendance.finished_at.nil?
       if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
         flash[:info] = "お疲れ様でした。"
+        @user.update_attributes(started_at_flag: false)
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
