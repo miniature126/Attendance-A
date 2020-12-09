@@ -86,7 +86,7 @@ class UsersController < ApplicationController
   end
 
   def attendance_employee_list
-  
+    
   end
 
   def edit_basic_info

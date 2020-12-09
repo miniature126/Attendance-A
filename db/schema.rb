@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201123020040) do
+ActiveRecord::Schema.define(version: 20201209223527) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -91,12 +91,13 @@ ActiveRecord::Schema.define(version: 20201123020040) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-11-23 08:00:00"
+    t.datetime "basic_time", default: "2020-12-10 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "designated_work_start_time", default: "2020-11-23 09:00:00"
-    t.datetime "designated_work_end_time", default: "2020-11-23 18:00:00"
+    t.datetime "designated_work_start_time", default: "2020-12-10 09:00:00"
+    t.datetime "designated_work_end_time", default: "2020-12-10 18:00:00"
     t.integer "employee_number"
     t.string "uid"
+    t.boolean "started_at_flag", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

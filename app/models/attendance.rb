@@ -79,5 +79,4 @@ class Attendance < ApplicationRecord
   def one_day_plus_month
     self.finished_at += 1.day
   end
-
 end
