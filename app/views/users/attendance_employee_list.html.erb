@@ -1,1 +1,22 @@
-<h1>出勤中社員一覧</h1>
+<% provide(:title, "Attendant list") %>
+
+<div class="container">
+  <h1>出勤中社員一覧</h1>
+  <table class="table table-bordered table-striped user-display__table--centered">
+    <thead>
+      <tr>
+        <th><%= User.human_attribute_name :employee_number %></th>
+        <th><%= User.human_attribute_name :name %></th>
+      </tr>
+    </thead>
+    
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= format("%04d", user.employee_number) %></td>
+          <td><%= user.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

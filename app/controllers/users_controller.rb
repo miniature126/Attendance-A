@@ -86,7 +86,7 @@ class UsersController < ApplicationController
   end
 
   def attendance_employee_list
-    
+    @users = User.where(started_at_flag: true)
   end
 
   def edit_basic_info

@@ -88,3 +88,15 @@ ul {
 ul > li > .link__superior--notice {
   color: red;
 }
+
+/* Attendant list */
+.user-display__table--centered {
+  th {
+    vertical-align: middle;
+    text-align: center;
+  }
+  td {
+    vertical-align: middle;
+    text-align: center;
+  }
+}
