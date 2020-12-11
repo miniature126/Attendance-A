@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201209223527) do
+ActiveRecord::Schema.define(version: 20201211235359) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -49,6 +49,13 @@ ActiveRecord::Schema.define(version: 20201209223527) do
     t.boolean "overwork_flag", default: false
     t.boolean "one_month_flag", default: false
     t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
+  create_table "bases", force: :cascade do |t|
+    t.string "base_name"
+    t.string "attendance_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "corrections", force: :cascade do |t|
@@ -91,10 +98,10 @@ ActiveRecord::Schema.define(version: 20201209223527) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-12-11 08:00:00"
+    t.datetime "basic_time", default: "2020-12-12 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "designated_work_start_time", default: "2020-12-11 09:00:00"
-    t.datetime "designated_work_end_time", default: "2020-12-11 18:00:00"
+    t.datetime "designated_work_start_time", default: "2020-12-12 09:00:00"
+    t.datetime "designated_work_end_time", default: "2020-12-12 18:00:00"
     t.integer "employee_number"
     t.string "uid"
     t.boolean "started_at_flag", default: false, null: false
