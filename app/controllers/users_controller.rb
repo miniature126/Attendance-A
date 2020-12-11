@@ -53,6 +53,7 @@ class UsersController < ApplicationController
   
   def create
     @user = User.new(user_params)
+    @user.employee_number = User.exists? ? User.last.employee_number + 1 : 1001
     if @user.save
       log_in @user
       flash[:success] = "ユーザーを作成しました。"
