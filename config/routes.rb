@@ -38,4 +38,6 @@ Rails.application.routes.draw do
     get 'edit_approvals_superior_notice', to: "approvals#edit_approval_superior_notice" #複数申請される可能性があるので、approvalのidはいらない。
     patch 'update_approvals_superior_notice', to: "approvals#update_approval_superior_notice"
   end
+
+  resources :bases, only: [:index, :create, :edit, :update, :destroy]
 end
