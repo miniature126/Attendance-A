@@ -2,13 +2,13 @@ class BasesController < ApplicationController
   def index
   end
 
-  def update
-  end
-
   def create
   end
 
-  def destroy
+  def update
   end
   
+  def destroy
+  end
+
 end
