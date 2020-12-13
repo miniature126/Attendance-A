@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20201213022337) do
+ActiveRecord::Schema.define(version: 20201211235359) do
 
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
@@ -52,11 +52,11 @@ ActiveRecord::Schema.define(version: 20201213022337) do
   end
 
   create_table "bases", force: :cascade do |t|
+    t.string "base_number"
     t.string "base_name"
     t.string "attendance_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "base_number"
   end
 
   create_table "corrections", force: :cascade do |t|
