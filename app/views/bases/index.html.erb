@@ -2,5 +2,79 @@
 <h1>拠点一覧</h1>
 
 <div class="container">
-  
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th><%= t(".base_number") %></th>
+        <th><%= t(".base_name") %></th>
+        <th><%= t(".attendance_type") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="panel-group accordion--edit">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a class="btn btn-primary" data-toggle="collapse" data-parent=".accordion--edit" href="#menu__accordion1" aria-expanded="false">
+                  編集
+                </a>
+              </div>
+              <div id="menu__accordion1" class="panel-collapse collapse">
+                <div class="panel-body">
+
+                  <%= form_with(model: @base, local: true) do |f| %>
+
+                    <%= f.label t(".base_number"), class: "label-base--new" %>
+                    <%= f.text_field :base_number, class: "form-control" %>
+
+                    <%= f.label t(".base_name"), class: "label-base--new" %>
+                    <%= f.text_field :base_name, class: "form-control" %>
+
+                    <%= f.label t(".attendance_type"), class: "label-base--new" %>
+                    <%= f.text_field :attendance_type, class: "form-control" %>
+
+                    <%= f.submit "追加する", class: "btn btn-primary btn-base--new" %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td><%= link_to "削除", "#", class: "btn btn-primary" %></td>
+        <td>content</td>
+        <td>content</td>
+        <td>content</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="panel-group accordion--new">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a class="btn btn-lg btn-primary" data-toggle="collapse" data-parent=".accordion--new" href="#menu__accordion2" aria-expanded="false">
+          拠点情報追加
+        </a>
+      </div>
+      <div id="menu__accordion2" class="panel-collapse collapse">
+        <div class="panel-body">
+
+          <%= form_with(model: @base, local: true) do |f| %>
+
+            <%= f.label t(".base_number"), class: "label-base--new" %>
+            <%= f.text_field :base_number, class: "form-control" %>
+
+            <%= f.label t(".base_name"), class: "label-base--new" %>
+            <%= f.text_field :base_name, class: "form-control" %>
+
+            <%= f.label t(".attendance_type"), class: "label-base--new" %>
+            <%= f.text_field :attendance_type, class: "form-control" %>
+
+            <%= f.submit "追加する", class: "btn btn-primary btn-base--new" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

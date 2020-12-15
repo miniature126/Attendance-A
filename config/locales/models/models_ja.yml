@@ -1,55 +1,59 @@
 ja:
   activerecord:
     models:
-      user: ユーザー
+      base: 拠点
     attributes:
-        user:
-          id: ID
-          name: 名前
-          email: メールアドレス
-          department: 所属
-          basic_time: 基本時間
-          password: パスワード
-          password_confirmation: パスワード再入力
-          created_at: 作成日
-          updated_at: 更新日
-          admin: 管理者
-          superior: 上長
-          designated_work_start_time: 指定勤務開始時間
-          designated_work_end_time: 指定勤務終了時間
-          employee_number: 社員番号
-          uid: カードID
-          started_at_flag: 出勤フラグ
-        attendance:
-          worked_on: 日付
-          started_at: 出勤時間
-          finished_at: 退勤時間
-          note: 備考
-          user: ユーザーID
-          finish_overwork: 終了予定時間
-          work_contents: 業務処理内容
-          overwork_confirmation: 指示者確認㊞
-          applied_overwork: 残業申請先
-          overwork_reflection: 変更
-          change_attendances_confirmation: 指示者確認㊞
-          applied_attendances_change: 勤怠変更申請先
-          change_attendances_reflection: 変更
-          started_at_before_change: 変更前出勤時間
-          finished_at_before_change: 変更前退勤時間
-        approval:
-          applied_approval_superior: 1ヶ月の勤怠申請先
-          approval_superior_reflection: 変更
-          approval_superior_confirmation: 指示者確認㊞
-          applied_month: 勤怠申請月
-        correction:
-          date: 日付
-          before_attendance_time: 変更前出勤時間
-          before_leaving_time: 変更前退勤時間
-          attendance_time: 変更後出勤時間
-          leaving_time: 変更後退勤時間
-          instructor: 指示者
-          approval_date: 承認日
-        base:
+      base:
           base_number: 拠点番号
           base_name: 拠点名
           attendance_type: 拠点種類
+    models:
+      user: ユーザー
+    attributes:
+      user:
+        id: ID
+        name: 名前
+        email: メールアドレス
+        department: 所属
+        basic_time: 基本時間
+        password: パスワード
+        password_confirmation: パスワード再入力
+        admin: 管理者
+        superior: 上長
+        designated_work_start_time: 指定勤務開始時間
+        designated_work_end_time: 指定勤務終了時間
+        employee_number: 社員番号
+        uid: カードID
+        started_at_flag: 出勤フラグ
+      attendance:
+        worked_on: 日付
+        started_at: 出勤時間
+        finished_at: 退勤時間
+        note: 備考
+        user: ユーザーID
+        finish_overwork: 終了予定時間
+        work_contents: 業務処理内容
+        overwork_confirmation: 指示者確認㊞
+        applied_overwork: 残業申請先
+        overwork_reflection: 変更
+        change_attendances_confirmation: 指示者確認㊞
+        applied_attendances_change: 勤怠変更申請先
+        change_attendances_reflection: 変更
+        started_at_before_change: 変更前出勤時間
+        finished_at_before_change: 変更前退勤時間
+      approval:
+        applied_approval_superior: 1ヶ月の勤怠申請先
+        approval_superior_reflection: 変更
+        approval_superior_confirmation: 指示者確認㊞
+        applied_month: 勤怠申請月
+      correction:
+        date: 日付
+        before_attendance_time: 変更前出勤時間
+        before_leaving_time: 変更前退勤時間
+        attendance_time: 変更後出勤時間
+        leaving_time: 変更後退勤時間
+        instructor: 指示者
+        approval_date: 承認日
+  attributes:
+    created_at: 作成日
+    updated_at: 更新日
