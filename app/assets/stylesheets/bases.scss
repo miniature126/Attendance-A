@@ -1,3 +1,15 @@
-// Place all the styles related to the bases controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: http://sass-lang.com/
+/* Base infomation */
+.label-base--new {
+  margin-top: 5px;
+}
+
+.btn-base--new {
+  margin-top: 10px;
+}
+
+.base-display__table--centered {
+  th, td {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
