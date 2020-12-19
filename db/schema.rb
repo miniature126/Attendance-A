@@ -55,7 +55,6 @@ ActiveRecord::Schema.define(version: 20201211235359) do
     t.integer "number"
     t.string "name"
     t.integer "attendance_type"
-    t.boolean "error_flag", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
