@@ -62,7 +62,7 @@
       <div id="menu__accordion--new" class="panel-collapse collapse">
         <div class="panel-body">
 
-          <%= form_with(model: @base, local: true) do |f| %>
+          <%= form_with(scope: :base, url: bases_path, local: true) do |f| %>
 
             <%= f.label t(".number"), class: "label-base--new" %>
             <%= f.number_field :number, class: "form-control" %>
