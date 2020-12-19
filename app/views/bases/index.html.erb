@@ -7,47 +7,49 @@
       <tr>
         <th></th>
         <th></th>
-        <th class="base-display__table--centered"><%= t(".base_number") %></th>
-        <th class="base-display__table--centered"><%= t(".base_name") %></th>
+        <th class="base-display__table--centered"><%= t(".number") %></th>
+        <th class="base-display__table--centered"><%= t(".name") %></th>
         <th class="base-display__table--centered"><%= t(".attendance_type") %></th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>
-          <div class="panel-group accordion--edit">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <a class="btn btn-primary" data-toggle="collapse" data-parent=".accordion--edit" href="#menu__accordion1" aria-expanded="false">
-                  修正
-                </a>
-              </div>
-              <div id="menu__accordion1" class="panel-collapse collapse">
-                <div class="panel-body">
+      <% @bases.each do |base| %>
+        <tr>
+          <td>
+            <div class="panel-group accordion--edit">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <a class="btn btn-primary" data-toggle="collapse" data-parent=".accordion--edit" href="#menu__accordion1" aria-expanded="false">
+                    修正
+                  </a>
+                </div>
+                <div id="menu__accordion1" class="panel-collapse collapse<%= @error %>">
+                  <div class="panel-body">
 
-                  <%= form_with(model: @base, local: true) do |f| %>
+                    <%= form_with(model: base, local: true) do |f| %>
 
-                    <%= f.label t(".base_number"), class: "label-base--new" %>
-                    <%= f.text_field :base_number, class: "form-control" %>
+                      <%= f.label t(".number"), class: "label-base--new" %>
+                      <%= f.text_field :number, class: "form-control" %>
 
-                    <%= f.label t(".base_name"), class: "label-base--new" %>
-                    <%= f.text_field :base_name, class: "form-control" %>
+                      <%= f.label t(".name"), class: "label-base--new" %>
+                      <%= f.text_field :name, class: "form-control" %>
 
-                    <%= f.label t(".attendance_type"), class: "label-base--new" %>
-                    <%= f.text_field :attendance_type, class: "form-control" %>
+                      <%= f.label t(".attendance_type"), class: "label-base--new" %>
+                      <%= f.text_field :attendance_type, class: "form-control" %>
 
-                    <%= f.submit "追加する", class: "btn btn-primary btn-base--new" %>
-                  <% end %>
+                      <%= f.submit "追加する", class: "btn btn-primary btn-base--new" %>
+                    <% end %>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </td>
-        <td class="base-display__table--centered"><%= link_to "削除", "#", class: "btn btn-primary" %></td>
-        <td class="base-display__table--centered">content</td>
-        <td class="base-display__table--centered">content</td>
-        <td class="base-display__table--centered">content</td>
-      </tr>
+          </td>
+          <td class="base-display__table--centered"><%= link_to "削除", "#", class: "btn btn-primary" %></td>
+          <td class="base-display__table--centered"><%= base.number %></td>
+          <td class="base-display__table--centered"><%= base.name %></td>
+          <td class="base-display__table--centered"><%= base.attendance_type %></td>
+        </tr>
+      <% end %>
     </tbody>
   </table>
   <div class="panel-group accordion--new">
@@ -62,11 +64,11 @@
 
           <%= form_with(model: @base, local: true) do |f| %>
 
-            <%= f.label t(".base_number"), class: "label-base--new" %>
-            <%= f.text_field :base_number, class: "form-control" %>
+            <%= f.label t(".number"), class: "label-base--new" %>
+            <%= f.text_field :number, class: "form-control" %>
 
-            <%= f.label t(".base_name"), class: "label-base--new" %>
-            <%= f.text_field :base_name, class: "form-control" %>
+            <%= f.label t(".name"), class: "label-base--new" %>
+            <%= f.text_field :name, class: "form-control" %>
 
             <%= f.label t(".attendance_type"), class: "label-base--new" %>
             <%= f.text_field :attendance_type, class: "form-control" %>
