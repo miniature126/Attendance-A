@@ -44,7 +44,9 @@
               </div>
             </div>
           </td>
-          <td class="base-display__table--centered"><%= link_to "削除", "#", class: "btn btn-primary" %></td>
+          <td class="base-display__table--centered"><%= link_to "削除", basis_path(base), method: :delete,
+                                                        data: { confirm: "削除してよろしいですか？" },
+                                                        class: "btn btn-primary" %></td>
           <td class="base-display__table--centered"><%= base.number %></td>
           <td class="base-display__table--centered"><%= base.name %></td>
           <td class="base-display__table--centered"><%= type_display(base.attendance_type) %></td>
