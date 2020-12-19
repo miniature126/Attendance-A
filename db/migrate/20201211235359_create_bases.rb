@@ -1,9 +1,10 @@
 class CreateBases < ActiveRecord::Migration[5.1]
   def change
     create_table :bases do |t|
-      t.string :number
+      t.integer :number
       t.string :name
-      t.string :attendance_type
+      t.integer :attendance_type
+      t.boolean :error_flag, default: false, null: false
 
       t.timestamps
     end
