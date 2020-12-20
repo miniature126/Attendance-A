@@ -192,13 +192,18 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
+
+        #取得する、なければ生成するに変更↓
         @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得
+        
         user = User.find_by(id: attendance.user_id)
         user.designated_work_end_time = attendance.worked_on.midnight.since(user.designated_work_end_time.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
         
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
+          
+          case params[:user][:attendances][id][:overwork_confirmation].to_i
+          when 1 #なし
             if attendance.overwork_flag #2回目以降の残業申請の場合、1つ前の値に戻す
               attendance.update_attributes!(finish_overwork: @history.b_finish_overwork,
                                             next_day: @history.b_next_day,
@@ -212,15 +217,24 @@ class AttendancesController < ApplicationController
                                             applied_overwork: nil,
                                             overwork_confirmation: nil)
             end
+          when 2 #申請中
+
+          when 3 or 4 #承認、否認
+
+          end
+          
+          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
+            
           else
             attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
             attendance.update_attributes!(overwork_flag: true)
           end
+
           attendance.update_attributes!(overwork_reflection: false)
         end
       end
     end
-    flash[:success] = "残行申請を更新しました。"
+    flash[:success] = "残業申請を更新しました。"
     redirect_to user_url(@superior)
   rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
     flash[:danger] = UPDATE_ERROR_MSG_2
