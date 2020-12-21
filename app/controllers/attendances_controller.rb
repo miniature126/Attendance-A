@@ -154,15 +154,6 @@ class AttendancesController < ApplicationController
     @user.save
     ActiveRecord::Base.transaction do #トランザクションを開始
       if User.find(params[:user][:attendances][:applied_overwork].to_i).superior? #申請先のユーザー、本当に上長？
-        #2回目以降の残業申請の場合、値を@historyにコピーする
-        if @attendance.overwork_flag
-          set_history
-          @history.update_attributes!(b_finish_overwork: @attendance.finish_overwork,
-                                      b_next_day: @attendance.next_day,
-                                      b_work_contents: @attendance.work_contents,
-                                      b_applied_overwork: @attendance.applied_overwork,
-                                      b_overwork_confirmation: @attendance.overwork_confirmation)
-        end
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][:next_day]) #翌日チェックありの場合
           @attendance.assign_attributes(overwork_request_params)
           @attendance.one_day_plus_overwork
@@ -192,18 +183,19 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
-
-        #取得する、なければ生成するに変更↓
-        @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得
-        
+        #attendanceに紐づくhistoryを取得、なければ生成する
+        @history = if History.find_by(attendance_id: attendance.id).present?
+                     History.find_by(attendance_id: attendance.id)
+                   else   
+                     History.create(attendance_id: attendance.id)
+                   end
         user = User.find_by(id: attendance.user_id)
         user.designated_work_end_time = attendance.worked_on.midnight.since(user.designated_work_end_time.seconds_since_midnight)
         user.save #基本時間の日付を残業申請日に合わせて変更、保存
-        
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
-          
           case params[:user][:attendances][id][:overwork_confirmation].to_i
           when 1 #なし
+            debugger
             if attendance.overwork_flag #2回目以降の残業申請の場合、1つ前の値に戻す
               attendance.update_attributes!(finish_overwork: @history.b_finish_overwork,
                                             next_day: @history.b_next_day,
@@ -217,19 +209,16 @@ class AttendancesController < ApplicationController
                                             applied_overwork: nil,
                                             overwork_confirmation: nil)
             end
-          when 2 #申請中
-
-          when 3 or 4 #承認、否認
-
-          end
-          
-          if params[:user][:attendances][id][:overwork_confirmation].to_i == 1 #ステータス「なし」が選択された場合
-            
-          else
+          when 3, 4 #承認、否認
             attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
+            @history.update_attributes!(b_finish_overwork: attendance.finish_overwork, #######確認する#######
+                                        b_next_day: attendance.next_day,
+                                        b_work_contents: attendance.work_contents,
+                                        b_applied_overwork: attendance.applied_overwork,
+                                        b_overwork_confirmation: attendance.overwork_confirmation)
             attendance.update_attributes!(overwork_flag: true)
           end
-
+          #2(申請中)はスルー
           attendance.update_attributes!(overwork_reflection: false)
         end
       end

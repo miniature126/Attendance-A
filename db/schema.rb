@@ -99,10 +99,10 @@ ActiveRecord::Schema.define(version: 20201211235359) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-12-20 08:00:00"
+    t.datetime "basic_time", default: "2020-12-22 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "designated_work_start_time", default: "2020-12-20 09:00:00"
-    t.datetime "designated_work_end_time", default: "2020-12-20 18:00:00"
+    t.datetime "designated_work_start_time", default: "2020-12-22 09:00:00"
+    t.datetime "designated_work_end_time", default: "2020-12-22 18:00:00"
     t.integer "employee_number"
     t.string "uid"
     t.boolean "started_at_flag", default: false, null: false
