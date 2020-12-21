@@ -44,20 +44,6 @@ class AttendancesController < ApplicationController
         if item[:applied_attendances_change].present? #勤怠変更申請先(上長)のidが存在する場合のみ
           @user.designated_work_end_time = attendance.worked_on.midnight.since(@user.designated_work_end_time.seconds_since_midnight)
           @user.save #@userの指定勤務終了時間の日付を申請している日付に合わせる。(合わせないと指定勤務終了時間より早い残業終了予定時間は無効のバリデーションに引っかかる)
-          if attendance.one_month_flag #2回目以降の申請の場合
-            if History.find_by(attendance_id: attendance.id).present? #attendanceに紐付くhistoryを取得、無ければ生成
-              @history = History.find_by(attendance_id: attendance.id)
-            else
-              @history = History.create!(attendance_id: attendance.id)
-            end
-            #勤怠変更申請で入力した値をhistoryレコードにコピー
-            @history.update_attributes!(b_started_at: attendance.started_at,
-                                        b_finished_at: attendance.finished_at,
-                                        b_next_day: attendance.next_day,
-                                        b_note: attendance.note,
-                                        b_applied_attendances_change: attendance.applied_attendances_change,
-                                        b_change_attendances_confirmation: attendance.change_attendances_confirmation)
-          end
           if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:next_day]) #翌日チェックありの場合
             attendance.assign_attributes(item)
             attendance.one_day_plus_month
@@ -86,11 +72,16 @@ class AttendancesController < ApplicationController
     ActiveRecord::Base.transaction do #トランザクションを開始
       attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
-        #attendanceに紐付くhistoryを取得(レコードが存在する＝2回目以降の申請)
-        @history = History.find_by(attendance_id: attendance.id) if History.find_by(attendance_id: attendance.id).present?
+        #attendanceに紐づくhistoryを取得、なければ生成する
+        @history = if History.find_by(attendance_id: attendance.id).present?
+          History.find_by(attendance_id: attendance.id)
+        else   
+          History.create(attendance_id: attendance.id)
+        end
         #「変更」にチェックが入っている時は更新、更新後は変更カラムをfalseに
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:change_attendances_reflection]) #string型→boolean型に
-          if params[:user][:attendances][id][:change_attendances_confirmation].to_i == 1 #ステータス「なし」が選択された場合、カラムを空に
+          case params[:user][:attendances][id][:change_attendances_confirmation].to_i
+          when 1 #なし
             if attendance.one_month_flag #2回目以降の申請の場合
               attendance.update_attributes!(started_at: @history.b_started_at,
                                             finished_at: @history.b_finished_at,
@@ -106,9 +97,18 @@ class AttendancesController < ApplicationController
                                             applied_attendances_change: nil,
                                             change_attendances_confirmation: nil)
             end
-          else
+          when 3, 4 #承認、否認
             attendance.update_attributes!(item) 
-            attendance.update_attributes!(one_month_flag: true, change_attendances_reflection: false)
+            @history.update_attributes!(b_started_at: attendance.started_at,
+                                        b_finished_at: attendance.finished_at,
+                                        b_next_day: attendance.next_day,
+                                        b_note: attendance.note,
+                                        b_applied_attendances_change: attendance.applied_attendances_change,
+                                        b_change_attendances_confirmation: attendance.change_attendances_confirmation)
+            attendance.update_attributes!(one_month_flag: true)
+          end
+          attendance.update_attributes!(change_attendances_reflection: false)
+          #申請中はスルー
             if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ(勤怠ログ表示用処理)
               if attendance.correction.present?
                 @correction = attendance.correction
