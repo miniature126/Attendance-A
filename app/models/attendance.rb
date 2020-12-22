@@ -42,8 +42,10 @@ class Attendance < ApplicationRecord
   
   #出勤日当日でない日は、出勤時間のみの更新は無効
   def started_at_is_invalid_exist_a_finished_at
-    unless worked_on == Date.current
-      errors.add(:finished_at, "が必要です") if started_at.present? && finished_at.blank?
+    if applied_attendances_change.present?
+      unless worked_on == Date.current
+        errors.add(:finished_at, "が必要です") if started_at.present? && finished_at.blank?
+      end
     end
   end
   
@@ -53,9 +55,11 @@ class Attendance < ApplicationRecord
   
   #指定勤務終了時間より早い残業終了予定時間は無効
   def finish_overwork_earlier_than_desig_finish_worktime_is_invalid
-    if finish_overwork.present?
-      if user.designated_work_end_time >= finish_overwork
-        errors.add(:desig_finish_worktime, "より早い時間は無効です")
+    if applied_attendances_change.present?
+      if finish_overwork.present?
+        if user.designated_work_end_time >= finish_overwork
+          errors.add(:desig_finish_worktime, "より早い時間は無効です")
+        end
       end
     end
   end
