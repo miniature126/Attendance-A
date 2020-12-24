@@ -38,4 +38,19 @@ module AttendancesHelper
       false
     end
   end
+
+  #指示者確認印欄の表示(残業申請)
+  def method_name
+    
+  end
+
+  #指示者確認印欄の表示(勤怠変更申請)
+  def method_name
+    
+  end
+
+  #指示者確認印欄の表示(1ヶ月勤怠申請)
+  def method_name
+    
+  end
 end

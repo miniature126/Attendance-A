@@ -32,16 +32,22 @@ class UsersController < ApplicationController
   end
 
   #CSV出力処理
+
   def csv_export_attendances
     head :no_content
     attendances = @user.attendances.where(started_at: @first_day..@last_day, finished_at: @first_day..@last_day)
-    filename = "#{@user.name}" + "_" + "#{@first_day.year}" + "年" + "#{@first_day.mon}" + "月_勤怠情報"
+    filename = "#{@user.name}_#{@first_day.year}年#{@first_day.mon}月_勤怠情報"
 
     csv1 = CSV.generate do |csv|
-      columns = [ "worked_on", "started_at", "finished_at" ]
-      csv << columns
+      column_name = [ "日付", "出勤時間", "退勤時間" ]
+      csv << column_name
       attendances.each do |attendance|
-        csv << attendance.attributes.values_at(*columns)
+        column_values = [
+          attendance.worked_on.strftime("%m/%d"),
+          attendance.started_at.strftime("%R"),
+          attendance.finished_at.strftime("%R"),
+        ]
+        csv << column_values
       end
     end
     create_csv(filename, csv1)
