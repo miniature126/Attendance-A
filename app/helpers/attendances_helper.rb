@@ -40,15 +40,37 @@ module AttendancesHelper
   end
 
   #指示者確認印欄の表示(残業申請)
-  def method_name
-    
+  def overwork_confirmation_state(superior, applied_overwork, overwork_confirmation) 
+    if applied_overwork == superior.id #申請先上長idが、@superiorで取得した上長idと等しい場合
+      case overwork_confirmation
+      when 2
+        return "#{superior.name}へ残業申請中"
+      when 3 
+        return "#{superior.name}より残業承認済"
+      when 4 
+        return "#{superior.name}より残業否認"
+      end
+    end
+  end
+
+  #残業申請と勤怠変更申請の区切り
+  def separation(overwork_confirmation, change_confirmation)
+    return "／" if overwork_confirmation.present? && change_confirmation.present?
   end
 
   #指示者確認印欄の表示(勤怠変更申請)
-  def method_name
-    
+  def change_confirmation_state(superior, applied_change, change_confirmation)   
+    if applied_change == superior.id 
+      case change_confirmation 
+      when 2 
+        return "#{superior.name}へ勤怠変更申請中"
+      when 3 
+        return "#{superior.name}より勤怠変更承認済"
+      when 4 
+        return "#{superior.name}より勤怠変更否認"
+      end
+    end
   end
-
   #指示者確認印欄の表示(1ヶ月勤怠申請)
   def method_name
     

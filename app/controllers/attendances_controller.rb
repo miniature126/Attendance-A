@@ -70,6 +70,7 @@ class AttendancesController < ApplicationController
   def update_change_notice
     @superior = User.find(params[:id]) #送信先に@superiorのidが含まれるため必要
     ActiveRecord::Base.transaction do #トランザクションを開始
+      update_number = []
       attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
         #attendanceに紐づくhistoryを取得、なければ生成する
@@ -89,6 +90,7 @@ class AttendancesController < ApplicationController
                                             note: @history.b_note,
                                             applied_attendances_change: @history.b_applied_attendances_change,
                                             change_attendances_confirmation: @history.b_change_attendances_confirmation)
+              update_number << attendance
             else #初回の申請の場合
               attendance.update_attributes!(started_at: nil,
                                             finished_at: nil,
@@ -96,6 +98,7 @@ class AttendancesController < ApplicationController
                                             note: nil,
                                             applied_attendances_change: nil,
                                             change_attendances_confirmation: nil)
+              update_number << attendance
             end
           when 3, 4 #承認、否認
             attendance.update_attributes!(item) 
@@ -105,6 +108,7 @@ class AttendancesController < ApplicationController
                                         b_note: attendance.note,
                                         b_applied_attendances_change: attendance.applied_attendances_change,
                                         b_change_attendances_confirmation: attendance.change_attendances_confirmation)
+            update_number << attendance
             attendance.update_attributes!(one_month_flag: true)
           end
           attendance.update_attributes!(change_attendances_reflection: false)

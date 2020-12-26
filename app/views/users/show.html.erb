@@ -154,25 +154,9 @@
                     <td><%= day.work_contents %></td>
                     <td>
                         <% @superior.each do |superior| %>
-                        <%# 今回superior.idは"2"か"3" %>
-                            <% if day.applied_overwork == superior.id %> <%# 申請先上長idが、@superiorで取得した上長idと等しい場合 %>
-                                <% if day.overwork_confirmation == 2 %>
-                                    <%= superior.name %>へ残業申請中
-                                <% elsif day.overwork_confirmation == 3 %>
-                                    <%= superior.name %>より残業承認済
-                                <% elsif day.overwork_confirmation == 4 %>
-                                    <%= superior.name %>より残業否認
-                                <% end %>
-                            <% end %>
-                            <% if day.applied_attendances_change == superior.id %>
-                                <% if day.change_attendances_confirmation == 2 %>
-                                    <%= superior.name %>へ勤怠変更申請中
-                                <% elsif day.change_attendances_confirmation == 3 %>
-                                    <%= superior.name %>より勤怠変更承認済
-                                <% elsif day.change_attendances_confirmation == 4 %>
-                                    <%= superior.name %>より勤怠変更否認
-                                <% end %>
-                            <% end %>
+                            <%= overwork_confirmation_state(superior, day.applied_overwork, day.overwork_confirmation) %>
+                            <%= separation(day.overwork_confirmation, day.change_attendances_confirmation)%>
+                            <%= change_confirmation_state(superior, day.applied_attendances_change, day.change_attendances_confirmation) %>
                         <% end %>
                     </td>
                 </tr>
