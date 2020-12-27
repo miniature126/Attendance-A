@@ -2,9 +2,7 @@ class AttendancesController < ApplicationController
   before_action :set_user, only: [:edit_one_month, :update_one_month] #ユーザー情報を取得
   before_action :logged_in_user, only: [:update, :edit_one_month] #ログイン済みユーザーか確認
   before_action :set_one_month, only: :edit_one_month #1ヶ月分の勤怠データを確認、セット
-# before_action :superior_or_correct_user, only: [:update, :edit_one_month, :update_one_month]
   before_action :set_attendance_set_user, only: [:edit_overwork_request, :update_overwork_request]
-  # before_action :set_history, only: [:update_overwork_request]
 
   include AttendancesHelper
   
@@ -70,7 +68,10 @@ class AttendancesController < ApplicationController
   def update_change_notice
     @superior = User.find(params[:id]) #送信先に@superiorのidが含まれるため必要
     ActiveRecord::Base.transaction do #トランザクションを開始
-      update_number = []
+      @chancel = []
+      @applying = []
+      @approval = []
+      @denial = []
       attendances_notice_params.each do |id, item|
         attendance = Attendance.find(id)
         #attendanceに紐づくhistoryを取得、なければ生成する
@@ -90,7 +91,7 @@ class AttendancesController < ApplicationController
                                             note: @history.b_note,
                                             applied_attendances_change: @history.b_applied_attendances_change,
                                             change_attendances_confirmation: @history.b_change_attendances_confirmation)
-              update_number << attendance
+              @chancel << attendance
             else #初回の申請の場合
               attendance.update_attributes!(started_at: nil,
                                             finished_at: nil,
@@ -98,8 +99,10 @@ class AttendancesController < ApplicationController
                                             note: nil,
                                             applied_attendances_change: nil,
                                             change_attendances_confirmation: nil)
-              update_number << attendance
+              @chancel << attendance
             end
+          when 2
+            @applying << attendance
           when 3, 4 #承認、否認
             attendance.update_attributes!(item) 
             @history.update_attributes!(b_started_at: attendance.started_at,
@@ -108,7 +111,12 @@ class AttendancesController < ApplicationController
                                         b_note: attendance.note,
                                         b_applied_attendances_change: attendance.applied_attendances_change,
                                         b_change_attendances_confirmation: attendance.change_attendances_confirmation)
-            update_number << attendance
+            
+            if params[:user][:attendances][id][:change_attendances_confirmation].to_i == 3
+              @approval << attendance
+            else
+              @denial << attendance
+            end
             attendance.update_attributes!(one_month_flag: true)
           end
           attendance.update_attributes!(change_attendances_reflection: false)
@@ -138,8 +146,8 @@ class AttendancesController < ApplicationController
           end
         end
       end     
-    end  
-    flash[:success] = "勤怠変更申請を更新しました。"
+    end
+    flash[:success] = "勤怠変更申請を更新しました。（なし#{@chancel.count}件、申請中#{@applying.count}件、承認#{@approval.count}件、否認#{@denial.count}件）"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
     flash[:danger] = UPDATE_ERROR_MSG_2
@@ -184,6 +192,10 @@ class AttendancesController < ApplicationController
   def update_overwork_notice
     @superior = User.find(params[:id])
     ActiveRecord::Base.transaction do #トランザクションを開始
+      @chancel = []
+      @applying = []
+      @approval = []
+      @denial = []
       overwork_notice_params.each do |id, item| #update_one_monthアクション参考
         attendance = Attendance.find(id)
         #attendanceに紐づくhistoryを取得、なければ生成する
@@ -205,20 +217,29 @@ class AttendancesController < ApplicationController
                                             work_contents: @history.b_work_contents,
                                             applied_overwork: @history.b_applied_overwork,
                                             overwork_confirmation: @history.b_overwork_confirmation)
+              @chancel << attendance
             else #初回の残業申請の場合、残業申請に関わるカラムの値を全て空にする(翌日はfalseに)
               attendance.update_attributes!(finish_overwork: nil,
                                             next_day: false,
                                             work_contents: nil,
                                             applied_overwork: nil,
                                             overwork_confirmation: nil)
+              @chancel << attendance
             end
+          when 2
+            @applying << attendance
           when 3, 4 #承認、否認
             attendance.update_attributes!(item) #パラメータの情報を基にカラムの値を更新
-            @history.update_attributes!(b_finish_overwork: attendance.finish_overwork, #######確認する#######
+            @history.update_attributes!(b_finish_overwork: attendance.finish_overwork,
                                         b_next_day: attendance.next_day,
                                         b_work_contents: attendance.work_contents,
                                         b_applied_overwork: attendance.applied_overwork,
                                         b_overwork_confirmation: attendance.overwork_confirmation)
+            if params[:user][:attendances][id][:overwork_confirmation].to_i == 3
+              @approval << attendance
+            else
+              @denial << attendance
+            end
             attendance.update_attributes!(overwork_flag: true)
           end
           #2(申請中)はスルー
@@ -226,7 +247,7 @@ class AttendancesController < ApplicationController
         end
       end
     end
-    flash[:success] = "残業申請を更新しました。"
+    flash[:success] = "残業申請を更新しました。（なし#{@chancel.count}件、申請中#{@applying.count}件、承認#{@approval.count}件、否認#{@denial.count}件）"
     redirect_to user_url(@superior)
   rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
     flash[:danger] = UPDATE_ERROR_MSG_2
@@ -241,15 +262,6 @@ class AttendancesController < ApplicationController
       @user = User.find(@attendance.user_id)
     end
 
-    #attendanceと同じattendance_idを持つHistoryレコードを探す、存在しなければ作成する。
-    def set_history
-      if History.find_by(attendance_id: @attendance.id).present?
-        @history = History.find_by(attendance_id: @attendance.id)
-      else
-        @history = History.create(attendance_id: @attendance.id)
-      end
-    end
-    
     #一般→上長(上長→上長)と、#上長→一般(上長→上長)でストロングパラメータを分ける
     #勤怠変更申請情報(申請者→上長)を扱う
     def attendances_request_params
