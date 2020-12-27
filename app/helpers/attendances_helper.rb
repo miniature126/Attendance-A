@@ -71,7 +71,8 @@ module AttendancesHelper
       end
     end
   end
-  #指示者確認印欄の表示(1ヶ月勤怠申請)
+
+  #所属長承認欄の表示
   def method_name
     
   end
