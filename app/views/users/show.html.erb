@@ -175,15 +175,7 @@
                     所属長承認&emsp;
                     <% if @approval.applied_approval_superior.present? %>
                         <% @superior.each do |superior| %>
-                            <% if superior.id == @approval.applied_approval_superior %> <%# 上長のidが申請先のidと等しい場合 %>
-                                <% if @approval.approval_superior_confirmation == 2 %>
-                                    <%= superior.name %>へ申請中
-                                <% elsif @approval.approval_superior_confirmation == 3 %>
-                                    <%= superior.name %>より承認済
-                                <% elsif @approval.approval_superior_confirmation == 4 %>
-                                    <%= superior.name %>より否認
-                                <% end %>
-                            <% end %>
+                            <%= approval_confirmation_state(superior, @approval.applied_approval_superior, @approval.approval_superior_confirmation) %>
                         <% end %>
                     <% else %>
                         未
@@ -193,7 +185,7 @@
                                 <% if current_user == @user %>
                                     <%= f.collection_select :applied_approval_superior, @superior, :id, :name,
                                         { include_blank: true }, class: "form-control", required: true %>
-                                    <%= f.submit "申請", class: "btn btn-primary" %>
+                                    <%= f.submit "申請", class: "btn btn-primary btn-attendance--approval" %>
                                 <% end %>
                             <% end %>
                     <% end %>

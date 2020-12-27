@@ -7,4 +7,18 @@ module ApprovalHelper
         false
     end
   end
+
+   #所属長承認欄の表示
+  def approval_confirmation_state(superior, applied_approval, approval_confirmation)
+    if applied_approval == superior.id  #上長のidが申請先のidと等しい場合 
+      case approval_confirmation
+      when 2 
+        return "#{superior.name}へ申請中"
+      when 3 
+        return "#{superior.name}より承認済"
+      when 4 
+        return "#{superior.name}より否認"
+      end
+    end
+  end
 end

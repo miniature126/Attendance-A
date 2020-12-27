@@ -35,9 +35,11 @@ class ApprovalsController < ApplicationController
             if approval.approval_flag #2回目以降の更新の場合
               approval.update_attributes!(approval_superior_confirmation: approval.b_approval_superior_confirmation,
                                           applied_approval_superior: approval.b_applied_approval_superior)
+              @chancel << item
             else #初回更新の場合
               approval.update_attributes!(approval_superior_confirmation: nil,
                                           applied_approval_superior: nil)
+              @chancel << item
             end
           when 2 #申請中
             @applying << item

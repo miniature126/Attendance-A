@@ -71,9 +71,4 @@ module AttendancesHelper
       end
     end
   end
-
-  #所属長承認欄の表示
-  def method_name
-    
-  end
 end
