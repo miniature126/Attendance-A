@@ -62,7 +62,8 @@ class ApprovalsController < ApplicationController
     end
     flash[:success] = "所属長承認申請を更新しました。(なし#{@chancel.count}件、申請中#{@applying.count}件、承認#{@approval.count}件、否認#{@denial.count}件)"
     redirect_to user_url(@superior)
-  rescue ActiveRecord::RecordInvalid #トランザクション例外処理
+  rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
+    debugger
     flash[:danger] = "無効なデータ入力または未入力項目があった為、更新をキャンセルしました。"
     redirect_to user_url(@superior)
   end
