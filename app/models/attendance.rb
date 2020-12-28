@@ -25,6 +25,8 @@ class Attendance < ApplicationRecord
   validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   validate :finish_overwork_exist_work_contents_applied_overwork_exist
+  #申請時、所属長の選択が必要
+  validate :attendance_change_application_necessary_superior_select
   
   def administrator_cannot_enter_attendance
     errors.add(:admin, "は勤怠情報を入力できません") if user.admin
@@ -72,6 +74,11 @@ class Attendance < ApplicationRecord
         errors.add(:applied_overwork, "が必要です")
       end
     end
+  end
+
+  #勤怠変更申請時、上長の選択が必要
+  def attendance_change_application_necessary_superior_select
+    errors.add(:applied_attendances_change, "を選択してください") if change_attendances_confirmation == 2 && applied_attendances_change.nil?
   end
 
   #残業申請時翌日チェック有りの場合は+1日
