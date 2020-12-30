@@ -66,13 +66,12 @@ class Attendance < ApplicationRecord
     end
   end
   
-  #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
+  #残業申請時、上長の選択と作業内容、残業終了予定時間の入力が必要
   def finish_overwork_exist_work_contents_applied_overwork_exist
-    if finish_overwork.present?
-      unless work_contents.present? && applied_overwork.present?
+    if overwork_confirmation == 2 && applied_overwork.nil?
         errors.add(:work_contents, "が必要です")
         errors.add(:applied_overwork, "が必要です")
-      end
+        errors.add(:applied_overwork, "を選択してください")
     end
   end
 

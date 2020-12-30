@@ -73,7 +73,7 @@
                         <td><%= day.note %></td>
                         <td>
                             <%= attendance.select :change_attendances_confirmation,
-                                { "なし(申請取り消し)": 1, "申請中": 2, "承認": 3, "否認": 4 },
+                                { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
                                 { selected: 2 }, class: "form-control", required: true %>
                         </td>
                         <td><%= attendance.check_box :change_attendances_reflection, {}, "true", "false" %></td>

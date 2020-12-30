@@ -42,7 +42,7 @@ ja:
         started_at_before_change: 変更前出勤時間
         finished_at_before_change: 変更前退勤時間
       approval:
-        applied_approval_superior: 所属長
+        applied_approval_superior: 所属長承認申請先
         approval_superior_reflection: 変更
         approval_superior_confirmation: 指示者確認㊞
         applied_month: 勤怠申請月

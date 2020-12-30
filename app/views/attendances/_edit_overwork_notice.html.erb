@@ -50,7 +50,7 @@
                         <td><%= overwork_times(user.designated_work_end_time, day.finish_overwork, day.worked_on) %></td>
                         <td><%= day.work_contents %></td>
                         <td><%= attendance.select :overwork_confirmation,
-                                { "なし(申請取り消し)": 1, "申請中": 2, "承認": 3, "否認": 4 },
+                                { "なし": 1, "申請中": 2, "承認": 3, "否認": 4 },
                                 { selected: 2 }, class: "form-control", required: true %>
                         </td>
                         <td><%= attendance.check_box :overwork_reflection, {}, "true", "false" %></td>
