@@ -28,26 +28,31 @@ class UsersController < ApplicationController
     @approval_application_sum = Approval.where(approval_superior_confirmation: 2, applied_approval_superior: params[:id]).count
     @overwork_application_sum = Attendance.where(overwork_confirmation: 2, applied_overwork: params[:id]).count
     @attendances_application_sum = Attendance.where(change_attendances_confirmation: 2, applied_attendances_change: params[:id]).count
-    @export_attendances = @user.attendances.where(started_at: @first_day..@last_day, finished_at: @first_day..@last_day)
+    # @export_attendances = @user.attendances.where(started_at: @first_day..@last_day, finished_at: @first_day..@last_day)
   end
 
   #CSV出力処理
-
   def csv_export_attendances
     head :no_content
-    attendances = @user.attendances.where(started_at: @first_day..@last_day, finished_at: @first_day..@last_day)
+    export_attendances = []
+    attendances = @user.attendances.where(worked_on: @first_day..@last_day, 
+                                          change_attendances_confirmation: nil, change_attendances_confirmation: 3)
+    attendances.each do |attendance|
+      export_attendances << attendance if attendance.started_at.present? && attendance.finished_at.present?
+    end
     filename = "#{@user.name}_#{@first_day.year}年#{@first_day.mon}月_勤怠情報"
 
     csv1 = CSV.generate do |csv|
       column_name = [ "日付", "出勤時間", "退勤時間" ]
       csv << column_name
-      attendances.each do |attendance|
+      export_attendances.each do |attendance|
         column_values = [
           attendance.worked_on.strftime("%m/%d"),
           attendance.started_at.strftime("%R"),
           attendance.finished_at.strftime("%R"),
         ]
         csv << column_values
+        
       end
     end
     create_csv(filename, csv1)

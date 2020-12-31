@@ -49,7 +49,6 @@ class ApplicationController < ActionController::Base
     one_month = [*@first_day..@last_day]
     #ユーザーに紐付く１ヶ月分のレコードを検索し取得
     @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
-
     #対象の月の日数とユーザーに紐付く１ヶ月分のレコードの日数が一致するか否か
     unless one_month.count == @attendances.count
       ActiveRecord::Base.transaction do #トランザクションを開始
@@ -62,7 +61,6 @@ class ApplicationController < ActionController::Base
   
   #トランザクションによるエラー分岐。e.record.errorsでエラー内容が参照できる
   rescue ActiveRecord::RecordInvalid => e
-    debugger
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url
   end

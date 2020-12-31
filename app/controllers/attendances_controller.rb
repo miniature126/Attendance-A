@@ -210,7 +210,6 @@ class AttendancesController < ApplicationController
         if ActiveRecord::Type::Boolean.new.cast(params[:user][:attendances][id][:overwork_reflection]) #string型→boolean型に(:overwork_reflection→「変更」)
           case params[:user][:attendances][id][:overwork_confirmation].to_i
           when 1 #なし
-            debugger
             if attendance.overwork_flag #2回目以降の残業申請の場合、1つ前の値に戻す
               attendance.update_attributes!(finish_overwork: @history.b_finish_overwork,
                                             next_day: @history.b_next_day,
