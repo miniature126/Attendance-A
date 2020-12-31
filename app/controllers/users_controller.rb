@@ -35,13 +35,17 @@ class UsersController < ApplicationController
   def csv_export_attendances
     head :no_content
     export_attendances = []
-    attendances = @user.attendances.where(worked_on: @first_day..@last_day, 
-                                          change_attendances_confirmation: nil, change_attendances_confirmation: 3)
+    attendances = @user.attendances.where(worked_on: @first_day..@last_day) #とりあえずその月の勤怠情報を全て取得
     attendances.each do |attendance|
-      export_attendances << attendance if attendance.started_at.present? && attendance.finished_at.present?
+      if attendance.finished_at.present?
+        #直接入力した勤怠情報、もしくは変更申請で承認を貰った勤怠情報のみ格納
+        if attendance.change_attendances_confirmation == nil || attendance.change_attendances_confirmation == 3
+          export_attendances << attendance 
+        end
+      end
     end
     filename = "#{@user.name}_#{@first_day.year}年#{@first_day.mon}月_勤怠情報"
-
+    
     csv1 = CSV.generate do |csv|
       column_name = [ "日付", "出勤時間", "退勤時間" ]
       csv << column_name
