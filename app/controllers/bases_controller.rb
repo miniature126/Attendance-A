@@ -12,7 +12,7 @@ class BasesController < ApplicationController
       flash[:success] = "拠点情報を作成しました。"
       redirect_to bases_url
     else
-      flash[:danger] = "拠点情報追加をキャンセルしました。入力エラーが#{@base.errors.full_messages.count}件あります。<br>#{@base.errors.full_messages.join("。<br>")}"
+      flash[:danger] = "拠点情報追加をキャンセルしました。入力エラーが#{@base.errors.full_messages.count}件あります。<br>・#{@base.errors.full_messages.join("。<br>・")}"
       redirect_to bases_url 
     end
   end
@@ -22,7 +22,7 @@ class BasesController < ApplicationController
       flash[:success] = "拠点情報を修正しました。"
       redirect_to bases_url
     else
-      flash[:danger] = "修正をキャンセルしました。入力エラーが#{@base.errors.full_messages.count}件あります。<br>#{@base.errors.full_messages.join("。<br>")}"
+      flash[:danger] = "修正をキャンセルしました。入力エラーが#{@base.errors.full_messages.count}件あります。<br>・#{@base.errors.full_messages.join("。<br>・")}"
       redirect_to bases_url
     end
   end

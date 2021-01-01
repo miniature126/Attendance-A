@@ -92,7 +92,13 @@ class UsersController < ApplicationController
         redirect_to @user
       end
     else
-      render :edit
+      if current_user.admin?
+        user = User.find(params[:id])
+        flash[:danger] = "#{user.name}の情報更新をキャンセルしました。入力エラーが#{@user.errors.full_messages.count}件あります。<br>・#{@user.errors.full_messages.join("。<br>・")}"
+        redirect_to users_url
+      else
+        render :edit
+      end
     end
   end
   
