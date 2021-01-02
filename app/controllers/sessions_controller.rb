@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  # before_action :user_logged_in?, only: [:new, :create]
+  before_action :user_logged_in?, only: [:new, :create]
   
   def new
   end
@@ -24,11 +24,11 @@ class SessionsController < ApplicationController
     redirect_to root_url
   end
   
-  #beforeフィルター
-    # def user_logged_in?
-    #   current_user?(@user)
-    #   logged_in?
-    #   flash[:info] = "既にログイン済みです。"
-    #   redirect_to root_url
-    # end
+  # beforeフィルター
+    def user_logged_in?
+      if logged_in?
+        flash[:info] = "既にログイン済みです。"
+        redirect_to 
+      end
+    end
 end

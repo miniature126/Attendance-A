@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 20201211235359) do
   create_table "approvals", force: :cascade do |t|
     t.integer "applied_approval_superior"
     t.integer "approval_superior_confirmation"
-    t.boolean "approval_superior_reflection"
+    t.boolean "approval_superior_reflection", default: false
     t.date "applied_month"
     t.integer "user_id"
     t.datetime "created_at", null: false
@@ -39,13 +39,13 @@ ActiveRecord::Schema.define(version: 20201211235359) do
     t.string "work_contents"
     t.integer "overwork_confirmation"
     t.integer "applied_overwork"
-    t.boolean "overwork_reflection"
+    t.boolean "overwork_reflection", default: false
     t.integer "applied_attendances_change"
     t.integer "change_attendances_confirmation"
-    t.boolean "change_attendances_reflection"
+    t.boolean "change_attendances_reflection", default: false
     t.datetime "started_at_before_change"
     t.datetime "finished_at_before_change"
-    t.boolean "log_flag"
+    t.boolean "log_flag", default: false
     t.boolean "overwork_flag", default: false
     t.boolean "one_month_flag", default: false
     t.index ["user_id"], name: "index_attendances_on_user_id"
@@ -99,10 +99,10 @@ ActiveRecord::Schema.define(version: 20201211235359) do
     t.string "remember_digest"
     t.boolean "admin", default: false
     t.string "department"
-    t.datetime "basic_time", default: "2020-12-31 08:00:00"
+    t.datetime "basic_time", default: "2021-01-02 08:00:00"
     t.boolean "superior", default: false
-    t.datetime "designated_work_start_time", default: "2020-12-31 09:00:00"
-    t.datetime "designated_work_end_time", default: "2020-12-31 18:00:00"
+    t.datetime "designated_work_start_time", default: "2021-01-02 09:00:00"
+    t.datetime "designated_work_end_time", default: "2021-01-02 18:00:00"
     t.integer "employee_number"
     t.string "uid"
     t.boolean "started_at_flag", default: false, null: false

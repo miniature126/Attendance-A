@@ -4,21 +4,20 @@ User.create!(name: "Admin",
              email: "admin@email.com",
              password: "password",
              password_confirmation: "password",
-             employee_number: 1,
              admin: true)
 
 User.create!(name: "Superior1",
              email: "superior-1@email.com",
              password: "password",
              password_confirmation: "password",
-             employee_number: 2,
+             employee_number: 0001,
              superior: true)
 
 User.create!(name: "Superior2",
              email: "superior-2@email.com",
              password: "password",
              password_confirmation: "password",
-             employee_number: 3,
+             employee_number: 0002,
              superior: true)
 
 5.times do |n|
