@@ -57,10 +57,10 @@ class Attendance < ApplicationRecord
   
   #指定勤務終了時間より早い残業終了予定時間は無効
   def finish_overwork_earlier_than_desig_finish_worktime_is_invalid
-    if applied_attendances_change.present?
+    if applied_overwork.present?
       if finish_overwork.present?
         if user.designated_work_end_time >= finish_overwork
-          errors.add(:desig_finish_worktime, "より早い時間は無効です")
+          errors.add(:designated_work_end_time, "より早い時間は無効です")
         end
       end
     end
