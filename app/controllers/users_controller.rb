@@ -51,9 +51,9 @@ class UsersController < ApplicationController
       csv << column_name
       export_attendances.each do |attendance|
         column_values = [
-          l(attendance.worked_on, format: :short),
-          l(attendance.started_at.floor_to(15.minute), format: :time),
-          l(attendance.finished_at.floor_to(15.minute), format: :time)
+          attendance.worked_on.strftime("%m/%d"),
+          attendance.started_at.strftime("%R"),
+          attendance.finished_at.strftime("%R")
         ]
         csv << column_values
       end

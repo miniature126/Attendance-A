@@ -50,10 +50,10 @@ class AttendancesController < ApplicationController
             attendance.update_attributes!(item) #翌日チェックなしの場合
           end
           attendance.update_attributes!(change_attendances_confirmation: 2) #ステータスを申請中に
+          flash[:success] = "勤怠情報の変更を申請しました。" if flash[:success].nil?
         end
       end
     end
-    flash[:success] = "勤怠情報の変更を申請しました。"
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
     flash[:danger] = UPDATE_ERROR_MSG_2
