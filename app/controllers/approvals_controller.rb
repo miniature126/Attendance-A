@@ -10,7 +10,6 @@ class ApprovalsController < ApplicationController
     flash[:success] = "#{@approval.applied_month.month}月分の勤怠を申請しました。"
     redirect_to user_url(@user)
   rescue ActiveRecord::RecordInvalid => e #トランザクションエラー分岐
-    debugger
     flash[:danger] = "#{@approval.applied_month.month}月分の勤怠申請をキャンセルしました。未入力項目がないか確認してください。"
     redirect_to user_url(@user)
   end

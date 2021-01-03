@@ -51,12 +51,11 @@ class UsersController < ApplicationController
       csv << column_name
       export_attendances.each do |attendance|
         column_values = [
-          attendance.worked_on.strftime("%m/%d"),
-          attendance.started_at.strftime("%R"),
-          attendance.finished_at.strftime("%R"),
+          l(attendance.worked_on, format: :short),
+          l(attendance.started_at.floor_to(15.minute), format: :time),
+          l(attendance.finished_at.floor_to(15.minute), format: :time)
         ]
         csv << column_values
-        
       end
     end
     create_csv(filename, csv1)
@@ -67,7 +66,6 @@ class UsersController < ApplicationController
   end
   
   def create
-    debugger
     @user = User.new(user_params)
     @user.employee_number = User.exists? ? User.last.employee_number + 1 : 1001
     if @user.save
