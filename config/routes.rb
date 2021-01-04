@@ -38,5 +38,5 @@ Rails.application.routes.draw do
     patch 'update_approvals_superior_notice', to: "approvals#update_approval_superior_notice"
   end
 
-  resources :bases, only: [:index, :create, :edit, :update, :destroy]
+  resources :bases, only: [:index, :create, :update, :destroy]
 end
