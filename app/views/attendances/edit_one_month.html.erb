@@ -22,11 +22,16 @@
               <td><%= l(day.worked_on, format: :short) %></td>
               <td><%= $days_of_the_week[day.worked_on.wday] %></td>
               <% if Date.current < day.worked_on %>
-                <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
+                <td><%= attendance.time_select :started_at, { include_blank: true, disabled: true }, { class: "time__input-form" } %></td>
+                <td><%= attendance.time_select :finished_at, { include_blank: true, disabled: true }, { class: "time__input-form" } %></td>
               <% else %>
-                <td><%= attendance.time_field :started_at, class: "form-control" %></td>
-                <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+                <% if day.started_at.present? && day.finished_at.present? %>
+                  <td><%= attendance.time_select :started_at, { :default => {:minute => l(day.started_at.floor_to(15.minute), format: :minute)} }, { class: "time__input-form" } %></td>
+                  <td><%= attendance.time_select :finished_at, { :default => {:minute => l(day.started_at.floor_to(15.minute), format: :minute)} }, { class: "time__input-form" } %></td>
+                <% else %>
+                  <td><%= attendance.time_select :started_at, { include_blank: true }, { class: "time__input-form" } %></td>
+                  <td><%= attendance.time_select :finished_at, { include_blank: true }, { class: "time__input-form" } %></td>
+                <% end %>
               <% end %>
               <td><%= attendance.check_box :next_day, {}, "true", "false" %></td>
               <td>
