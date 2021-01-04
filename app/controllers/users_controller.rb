@@ -5,11 +5,10 @@ class UsersController < ApplicationController
                                   :edit_basic_info_all, :update_basic_info_all, :csv_export_attendances]
   before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info,
                                         :edit_basic_info_all, :update_basic_info_all]
-  
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_attendances, only: :show
   before_action :set_superior_users, only: :show
-  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
+  before_action :admin_user, only: [:index, :destroy, :attendance_employee_list, :edit_basic_info, :update_basic_info, :edit_basic_info_all]
   before_action :superior_or_correct_user, only: :show
   before_action :set_one_month, only: [:show, :csv_export_attendances]
   
@@ -113,17 +112,17 @@ class UsersController < ApplicationController
     @users = User.where(started_at_flag: true)
   end
 
-  def edit_basic_info
-  end
+  # def edit_basic_info
+  # end
   
-  def update_basic_info
-    if @user.update_attributes(basic_info_params)
-      flash[:success] = "基本情報を更新しました。"
-    else
-      flash[:danger] = "#{@user.name}の基本情報更新に失敗しました。<br>" + @user.errors.full_messages.join("<br>")
-    end
-    redirect_to users_url
-  end
+  # def update_basic_info
+  #   if @user.update_attributes(basic_info_params)
+  #     flash[:success] = "基本情報を更新しました。"
+  #   else
+  #     flash[:danger] = "#{@user.name}の基本情報更新に失敗しました。<br>" + @user.errors.full_messages.join("<br>")
+  #   end
+  #   redirect_to users_url
+  # end
   
   def edit_basic_info_all
   end
