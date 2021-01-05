@@ -26,10 +26,10 @@
       <% @attendances.each do |attendance| %>
         <tr>
           <td><%= attendance.correction.date %></td>
-          <td><%= l(attendance.correction.before_attendance_time, format: :time) if attendance.correction.before_attendance_time.present? %></td>
-          <td><%= l(attendance.correction.before_leaving_time, format: :time) if attendance.correction.before_leaving_time.present? %></td>
-          <td><%= l(attendance.correction.attendance_time, format: :time) if attendance.correction.attendance_time.present? %></td>
-          <td><%= l(attendance.correction.leaving_time, format: :time) if attendance.correction.leaving_time.present? %></td>
+          <td><%= l(attendance.correction.before_attendance_time.floor_to(15.minute), format: :time) if attendance.correction.before_attendance_time.present? %></td>
+          <td><%= l(attendance.correction.before_leaving_time.floor_to(15.minute), format: :time) if attendance.correction.before_leaving_time.present? %></td>
+          <td><%= l(attendance.correction.attendance_time.floor_to(15.minute), format: :time) if attendance.correction.attendance_time.present? %></td>
+          <td><%= l(attendance.correction.leaving_time.floor_to(15.minute), format: :time) if attendance.correction.leaving_time.present? %></td>
           <td><%= superior_name(attendance.correction.instructor.to_i) %></td>
           <td><%= attendance.correction.approval_date %></td>
         </tr>

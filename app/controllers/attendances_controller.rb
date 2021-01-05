@@ -17,6 +17,13 @@ class AttendancesController < ApplicationController
       if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
         flash[:info] = "おはようございます！"
         @user.update_attributes(started_at_flag: true)
+
+        unless @attendance.correction.present?
+          @attendance.create_correction(date: @attendance.worked_on,
+                                        before_attendance_time: @attendance.started_at,
+                                        approval_date: Date.current)
+        end
+
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
@@ -24,6 +31,10 @@ class AttendancesController < ApplicationController
       if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
         flash[:info] = "お疲れ様でした。"
         @user.update_attributes(started_at_flag: false)
+        @correction = @attendance.correction 
+        #勤怠ログ用レコードの変更前退社時間がnilの場合、@attendance.finished_atの値を勤怠ログ用レコードの変更前退社時間に入れる
+        @correction.update_attributes(before_leaving_time: @attendance.finished_at) if @correction.before_leaving_time.nil?
+
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
@@ -121,11 +132,12 @@ class AttendancesController < ApplicationController
           end
           attendance.update_attributes!(change_attendances_reflection: false)
           #申請中はスルー
+
           if attendance.change_attendances_confirmation == 3 #ステータスが承認済みの場合のみ(勤怠ログ表示用処理)
-            if attendance.correction.present?
+            if attendance.correction.present? #勤怠ログが存在する場合
               @correction = attendance.correction
-              #初回の更新の場合は、一番最初に登録した出勤時間と退勤時間を別カラムに移動し、保持しておく
-              unless @correction.before_attendance_time.present? && @correction.before_leaving_time.present?
+              #変更前の時間が存在しなければ、出勤時間と退勤時間を別カラムに移動し、保持しておく(勤怠ログの変更前時間になる)
+              if @correction.before_attendance_time.nil? && @correction.before_leaving_time.nil?
                 @correction.update_attributes!(before_attendance_time: @correction.attendance_time,
                                               before_leaving_time: @correction.leaving_time)
               end
@@ -134,6 +146,7 @@ class AttendancesController < ApplicationController
                                             leaving_time: attendance.finished_at,
                                             instructor: attendance.applied_attendances_change,
                                             approval_date: Date.current)
+              attendance.update_attributes!(log_flag: true) #変更あり
             else
               #勤怠変更申請が承認された場合、attendanceのidに紐づくCorrectionモデルのレコードを作成、ログのレコードができたらフラグを立てる
               attendance.create_correction!(date: attendance.worked_on,
@@ -141,7 +154,7 @@ class AttendancesController < ApplicationController
                                             leaving_time: attendance.finished_at,
                                             instructor: attendance.applied_attendances_change,
                                             approval_date: Date.current)
-              attendance.update_attributes!(log_flag: true) #ログ持ってます
+              attendance.update_attributes!(log_flag: true) #変更あり
             end
           end
         end
@@ -150,6 +163,7 @@ class AttendancesController < ApplicationController
     flash[:success] = "勤怠変更申請を更新しました。（なし#{@chancel.count}件、申請中#{@applying.count}件、承認#{@approval.count}件、否認#{@denial.count}件）"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
+    debugger
     flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to user_url(@superior)
   end

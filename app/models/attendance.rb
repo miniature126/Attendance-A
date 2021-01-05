@@ -22,7 +22,7 @@ class Attendance < ApplicationRecord
   #退勤時間が存在する時、終了予定時間の更新は無効
   # validate :finish_overwork_is_invalid_exist_a_finished_at
   #指定勤務終了時間より早い残業終了予定時間は無効
-  validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
+  #validate :finish_overwork_earlier_than_desig_finish_worktime_is_invalid
   #残業終了予定時間が存在する時、業務処理内容と残業申請送信先も同じく存在する
   validate :finish_overwork_exist_work_contents_applied_overwork_exist
   #申請時、所属長の選択が必要
@@ -56,15 +56,15 @@ class Attendance < ApplicationRecord
   # end
   
   #指定勤務終了時間より早い残業終了予定時間は無効
-  def finish_overwork_earlier_than_desig_finish_worktime_is_invalid
-    if applied_overwork.present?
-      if finish_overwork.present?
-        if user.designated_work_end_time >= finish_overwork
-          errors.add(:designated_work_end_time, "より早い時間は無効です")
-        end
-      end
-    end
-  end
+  # def finish_overwork_earlier_than_desig_finish_worktime_is_invalid
+  #   if applied_overwork.present?
+  #     if finish_overwork.present?
+  #       if user.designated_work_end_time >= finish_overwork
+  #         errors.add(:designated_work_end_time, "より早い時間は無効です")
+  #       end
+  #     end
+  #   end
+  # end
   
   #残業申請時、上長の選択と作業内容、残業終了予定時間の入力が必要
   def finish_overwork_exist_work_contents_applied_overwork_exist
