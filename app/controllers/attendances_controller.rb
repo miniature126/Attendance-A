@@ -17,13 +17,21 @@ class AttendancesController < ApplicationController
       if @attendance.update_attributes(started_at: Time.current.change(sec: 0))
         flash[:info] = "おはようございます！"
         @user.update_attributes(started_at_flag: true)
-
+        #勤怠変更申請取り消し用処理(「なし」が選択された場合に1つ前の値に戻す際に使用)
+        if History.find_by(attendance_id: @attendance.id).present? #取り消し処理用レコードが存在する場合(残業申請が先にされている？)
+          @history = History.find_by(attendance_id: @attendance.id)
+          @history.update_attributes(b_started_at: @attendance.started_at)
+          @attendance.update_attributes(one_month_flag: true)
+        else   
+          History.create(attendance_id: @attendance.id, b_started_at: @attendance.started_at)
+          @attendance.update_attributes(one_month_flag: true)
+        end
+        #勤怠ログ用処理
         unless @attendance.correction.present?
           @attendance.create_correction(date: @attendance.worked_on,
                                         before_attendance_time: @attendance.started_at,
                                         approval_date: Date.current)
         end
-
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
@@ -31,10 +39,12 @@ class AttendancesController < ApplicationController
       if @attendance.update_attributes(finished_at: Time.current.change(sec: 0))
         flash[:info] = "お疲れ様でした。"
         @user.update_attributes(started_at_flag: false)
+        #勤怠変更申請取り消し処理用
+        @history = History.find_by(attendance_id: @attendance.id)
+        @history.update_attributes(b_finished_at: @attendance.finished_at)
+        #勤怠ログ用処理
         @correction = @attendance.correction 
-        #勤怠ログ用レコードの変更前退社時間がnilの場合、@attendance.finished_atの値を勤怠ログ用レコードの変更前退社時間に入れる
         @correction.update_attributes(before_leaving_time: @attendance.finished_at) if @correction.before_leaving_time.nil?
-
       else
         flash[:danger] = UPDATE_ERROR_MSG
       end
