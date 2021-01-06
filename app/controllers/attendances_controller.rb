@@ -77,7 +77,6 @@ class AttendancesController < ApplicationController
     end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
-    debugger
     flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
@@ -174,7 +173,6 @@ class AttendancesController < ApplicationController
     flash[:success] = "勤怠変更申請を更新しました。（なし#{@chancel.count}件、申請中#{@applying.count}件、承認#{@approval.count}件、否認#{@denial.count}件）"
     redirect_to user_url(@superior) #リダイレクト先の指定がないと画面が遷移せず固まる。
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
-    debugger
     flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to user_url(@superior)
   end
