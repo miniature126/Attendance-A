@@ -58,8 +58,13 @@
                         <% if day.one_month_flag %> <%# 変更前の値が存在する場合 %>
                           <td><%= l(day.history.b_started_at, format: :hour) %></td>
                           <td><%= l(day.history.b_started_at.floor_to(15.minute), format: :minute) %> </td>
-                          <td><%= l(day.history.b_finished_at, format: :hour) %></td>
-                          <td><%= l(day.history.b_finished_at.floor_to(15.minute), format: :minute) %></td>
+                          <% if day.worked_on == Date.current %><%# 申請日が今日でまだ退勤時間が存在しない場合 %>
+                            <td></td>
+                            <td></td>
+                          <% else %>
+                            <td><%= l(day.history.b_finished_at, format: :hour) %></td>
+                            <td><%= l(day.history.b_finished_at.floor_to(15.minute), format: :minute) %></td>
+                          <% end %>
                         <% else %> <%# 存在しない場合 %>
                           <td></td>
                           <td></td>

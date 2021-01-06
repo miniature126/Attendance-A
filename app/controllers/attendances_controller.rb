@@ -77,6 +77,7 @@ class AttendancesController < ApplicationController
     end
     redirect_to user_url(date: params[:date])
   rescue ActiveRecord::RecordInvalid => e #トランザクション例外処理
+    debugger
     flash[:danger] = UPDATE_ERROR_MSG_2
     redirect_to attendances_edit_one_month_user_url(date: params[:date]) and return
   end
